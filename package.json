@@ -1,0 +1,26 @@
+{
+  "name": "pngcutter",
+  "version": "1.0.0",
+  "description": "Ferramenta web gratuita para remover backgrounds de imagens",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "background-removal",
+    "image-processing",
+    "png",
+    "transparent",
+    "image-editor"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {
+    "@imgly/background-removal": "^1.2.0",
+    "colorjs.io": "^0.4.3",
+    "fabric": "^5.3.0"
+  }
+}
+

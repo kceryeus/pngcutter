@@ -1,0 +1,117 @@
+.content-area {
+  margin-top: 70px;
+  margin-left: 70px;
+  padding: var(--spacing-xl);
+  min-height: calc(100vh - 70px);
+  transition: margin-left var(--transition-base);
+}
+
+/* Apenas quando PINNED (fixado), ajusta o conteúdo */
+body.sidebar-pinned .content-area {
+  margin-left: 260px;
+}
+
+/* Quando expandido no hover (mas não fixado), mantém posição */
+.sidebar.expanded:not(.pinned) ~ * .content-area {
+  margin-left: 70px;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    margin-top: 60px;
+    margin-left: 0;
+    padding: var(--spacing-lg);
+  }
+  
+  .sidebar.pinned ~ * .content-area {
+    margin-left: 0;
+  }
+}
+
+.content-area-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb-item:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb-item.breadcrumb-current {
+  color: var(--text-primary);
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.breadcrumb-separator {
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+.content-area-body {
+  background-color: var(--bg-primary);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  min-height: 400px;
+}
+
+.content-area-placeholder {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: var(--spacing-xl);
+}
+
+.content-area-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.content-area-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.content-area-error {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .content-area {
+    margin-left: 0;
+    padding: var(--spacing-lg);
+  }
+  
+  .sidebar.expanded ~ * .content-area,
+  .sidebar.pinned ~ * .content-area {
+    margin-left: 0;
+  }
+}
+

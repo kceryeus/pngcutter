@@ -1,0 +1,140 @@
+:root {
+  /* Cores Primárias - Teal/Cyan do logo */
+  --color-primary: #00D4AA;
+  --color-primary-hover: #00B894;
+  --color-primary-light: #E0F7F4;
+  --color-primary-gradient: linear-gradient(135deg, #00D4AA 0%, #00B8A3 100%);
+  --color-secondary: #64748b;
+  --color-secondary-hover: #475569;
+  
+  /* Backgrounds - Mais suaves */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-hover: #f1f5f9;
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  --bg-glass-dark: rgba(15, 23, 42, 0.7);
+  
+  /* Textos - Melhor contraste */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
+  
+  /* Bordas - Mais suaves */
+  --border-color: #e2e8f0;
+  --border-color-hover: #cbd5e1;
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+  
+  /* Sombras - Mais suaves e elegantes */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  --shadow-primary: 0 10px 25px -5px rgba(0, 212, 170, 0.3);
+  
+  /* Espaçamentos */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  
+  /* Transições - Mais suaves */
+  --transition-fast: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Z-index */
+  --z-sidebar: 1002;
+  --z-topbar: 1001;
+  --z-modal: 2000;
+  --z-dropdown: 1003;
+}
+
+html[data-theme="dark"] {
+  /* Cores Primárias - Teal mais vibrante no dark */
+  --color-primary: #00E5C4;
+  --color-primary-hover: #00D4AA;
+  --color-primary-light: #0A3D32;
+  --color-primary-gradient: linear-gradient(135deg, #00E5C4 0%, #00D4AA 100%);
+  --color-secondary: #94a3b8;
+  --color-secondary-hover: #cbd5e1;
+  
+  /* Backgrounds - Gradientes suaves */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-hover: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.8);
+  --bg-glass-dark: rgba(15, 23, 42, 0.9);
+  
+  /* Textos */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #0f172a;
+  
+  /* Bordas */
+  --border-color: #334155;
+  --border-color-hover: #475569;
+  
+  /* Sombras - Mais pronunciadas no dark */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  --shadow-primary: 0 10px 25px -5px rgba(0, 229, 196, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 212, 170, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 184, 163, 0.05) 0px, transparent 50%);
+  color: var(--text-primary);
+  line-height: 1.6;
+  transition: background-color var(--transition-slow), color var(--transition-slow);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+html[data-theme="dark"] body {
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 229, 196, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 212, 170, 0.1) 0px, transparent 50%);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+input, textarea, select {
+  font-family: inherit;
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
