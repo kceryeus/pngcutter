@@ -3,6 +3,7 @@
   "version": "2.0.0",
   "description": "Ferramenta web completa para edição, redimensionamento em lote, conversão de formatos e remoção de backgrounds",
   "scripts": {
+    "build": "node build.js",
     "start": "node local-server.js",
     "dev": "node local-server.js"
   },
