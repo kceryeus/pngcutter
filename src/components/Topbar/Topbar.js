@@ -79,21 +79,13 @@ class Topbar {
   }
 
   renderUserMenu() {
-    if (!this.options.userName) return '';
+    const isPremium = window.Clerk && window.Clerk.user && window.Clerk.user.publicMetadata && window.Clerk.user.publicMetadata.isPremium;
     
     return `
-      <div class="topbar-user">
-        <button class="topbar-user-btn">
-          ${this.options.userAvatar ? 
-            `<img src="${this.options.userAvatar}" alt="${this.options.userName}" class="topbar-user-avatar">` :
-            `<div class="topbar-user-avatar-placeholder">
-              ${getIcon('user')}
-            </div>`
-          }
-          <span class="topbar-user-name">${this.options.userName}</span>
-          <span class="topbar-user-arrow">${getIcon('chevronDown')}</span>
-        </button>
+      <div class="topbar-user" id="clerk-user-button">
+        <!-- Clerk UserButton will be mounted here -->
       </div>
+      ${isPremium ? '<div class="topbar-pro-badge">PRO</div>' : ''}
     `;
   }
 

@@ -3,22 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PNG Cutter - Editor</title>
+  <title>Moz Image Studio - Editor</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/themes/base.css">
   <link rel="stylesheet" href="src/components/Sidebar/Sidebar.css">
   <link rel="stylesheet" href="src/components/Topbar/Topbar.css">
   <link rel="stylesheet" href="src/components/Modal/Modal.css">
   <link rel="stylesheet" href="src/components/ContentArea/ContentArea.css">
   <link rel="stylesheet" href="src/pages/BackgroundRemover/BackgroundRemover.css">
+  <link rel="stylesheet" href="src/pages/BulkResizer/BulkResizer.css">
+  <link rel="stylesheet" href="src/pages/FormatConverter/FormatConverter.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "@imgly/background-removal": "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.2.0/+esm",
+        "colorjs.io": "https://cdn.jsdelivr.net/npm/colorjs.io@0.4.3/+esm",
+        "fabric": "https://cdn.jsdelivr.net/npm/fabric@5.3.0/+esm",
+        "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm"
+      }
+    }
+  </script>
 </head>
 <body>
+  <!-- CLERK SDK -->
+  <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_dXAtc2VhbC05Mi5jbGVyay5hY2NvdW50cy5kZXYk"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+    type="text/javascript"
+  ></script>
+
   <div id="app"></div>
   
   <script type="module" src="src/index.js"></script>
 </body>
 </html>
+
 
 

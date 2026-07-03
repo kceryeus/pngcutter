@@ -34,7 +34,7 @@ class BackgroundRemover {
   constructor() {
     this.originalImage = null;
     this.processedImage = null;
-    this.imageData = null;
+    this.committedImageData = null;
     this.unsubscribe = null;
     this.canvas = null;
     this.fabricCanvas = null;
@@ -75,14 +75,14 @@ class BackgroundRemover {
         </div>
         
         <div class="background-remover-preview" id="preview-area" style="display: none;">
-          <div class="preview-section">
+          <div class="preview-section preview-original">
             <h3>${i18n.t('backgroundRemover.original')}</h3>
             <div class="preview-image-container">
               <img id="original-preview" alt="Original">
             </div>
           </div>
           
-          <div class="preview-section">
+          <div class="preview-section preview-result">
             <h3>${i18n.t('backgroundRemover.result')}</h3>
             <div class="preview-image-container" id="result-container">
               <canvas id="processed-canvas"></canvas>
@@ -302,9 +302,12 @@ class BackgroundRemover {
 
     if (isPremium && brushSize) {
       brushSize.addEventListener('input', (e) => {
-        this.brushSize = parseInt(e.target.value);
+        this.brushSize = parseInt(e.target.value, 10);
         const label = document.querySelector('.brush-size-label');
         if (label) label.textContent = `${this.brushSize}px`;
+        if (this.fabricCanvas && this.fabricCanvas.freeDrawingBrush) {
+          this.fabricCanvas.freeDrawingBrush.width = this.brushSize;
+        }
       });
     }
 
@@ -388,7 +391,7 @@ class BackgroundRemover {
   }
 
   async handleFile(file) {
-    const maxSize = 10 * 1024 * 1024;
+    const maxSize = 25 * 1024 * 1024;
     if (file.size > maxSize) {
       Modal.danger(i18n.t('backgroundRemover.errorSize'), () => {});
       return;
@@ -488,6 +491,7 @@ class BackgroundRemover {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       this.processedImage = canvas;
+      this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     } else {
       const resultBlob = await removeBackgroundLib(file);
       const img = await this.blobToImage(resultBlob);
@@ -497,6 +501,7 @@ class BackgroundRemover {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       this.processedImage = canvas;
+      this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     }
   }
 
@@ -504,7 +509,7 @@ class BackgroundRemover {
     const canvas = document.getElementById('processed-canvas');
     canvas.width = this.originalImage.width;
     canvas.height = this.originalImage.height;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
     ctx.drawImage(this.originalImage, 0, 0);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -543,6 +548,7 @@ class BackgroundRemover {
     this.smoothEdges(data, width, height);
     ctx.putImageData(imageData, 0, 0);
     this.processedImage = canvas;
+    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   }
 
   blobToImage(blob) {
@@ -554,15 +560,89 @@ class BackgroundRemover {
     });
   }
 
+  /**
+   * Rasterize a Fabric path to a Set of "x,y" pixel keys covered by the stroke.
+   * Uses a temp canvas: draw path with stroke (object transform applied), then collect pixels with alpha > 0.
+   */
+  getStrokePixels(pathObj, width, height, brushSize) {
+    if (!pathObj || !pathObj.path || width <= 0 || height <= 0) return new Set();
+    const pathData = pathObj.path;
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const ctx = tempCanvas.getContext('2d');
+    if (!ctx) return new Set();
+
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = brushSize;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+
+    const left = pathObj.left ?? 0;
+    const top = pathObj.top ?? 0;
+    const scaleX = pathObj.scaleX ?? 1;
+    const scaleY = pathObj.scaleY ?? 1;
+
+    let x = 0, y = 0;
+    for (let i = 0; i < pathData.length; i++) {
+      const cmd = pathData[i];
+      if (!Array.isArray(cmd) || cmd.length === 0) continue;
+      const c = String(cmd[0]).toUpperCase();
+      if (c === 'M') {
+        x = cmd[1] * scaleX + left;
+        y = cmd[2] * scaleY + top;
+        ctx.moveTo(x, y);
+      } else if (c === 'L') {
+        x = cmd[1] * scaleX + left;
+        y = cmd[2] * scaleY + top;
+        ctx.lineTo(x, y);
+      } else if (c === 'Q') {
+        const x1 = cmd[1] * scaleX + left;
+        const y1 = cmd[2] * scaleY + top;
+        x = cmd[3] * scaleX + left;
+        y = cmd[4] * scaleY + top;
+        ctx.quadraticCurveTo(x1, y1, x, y);
+      } else if (c === 'C') {
+        const x1 = cmd[1] * scaleX + left;
+        const y1 = cmd[2] * scaleY + top;
+        const x2 = cmd[3] * scaleX + left;
+        const y2 = cmd[4] * scaleY + top;
+        x = cmd[5] * scaleX + left;
+        y = cmd[6] * scaleY + top;
+        ctx.bezierCurveTo(x1, y1, x2, y2, x, y);
+      } else if (c === 'Z') {
+        ctx.closePath();
+      }
+    }
+    ctx.stroke();
+
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    const pixels = new Set();
+    for (let py = 0; py < height; py++) {
+      for (let px = 0; px < width; px++) {
+        const i = (py * width + px) * 4;
+        if (data[i + 3] > 0) pixels.add(`${px},${py}`);
+      }
+    }
+    return pixels;
+  }
+
   setupRefinement() {
     if (!premium.hasFeature('manualRefinement') || !fabric) return;
+    if (!this.committedImageData || !this.processedImage) return;
 
     const canvas = document.getElementById('processed-canvas');
     if (!canvas) return;
 
     if (this.fabricCanvas) {
       this.fabricCanvas.dispose();
+      this.fabricCanvas = null;
     }
+
+    const ctx = canvas.getContext('2d');
+    ctx.putImageData(this.committedImageData, 0, 0);
 
     this.fabricCanvas = new fabric.Canvas(canvas, {
       isDrawingMode: true,
@@ -580,21 +660,62 @@ class BackgroundRemover {
   applyRefinement() {
     if (!this.fabricCanvas) return;
 
-    const canvas = this.fabricCanvas.getElement();
+    const canvas = this.fabricCanvas.lowerCanvasEl || this.fabricCanvas.getElement?.() || document.getElementById('processed-canvas');
+    if (!canvas || !canvas.getContext) return;
     const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
+    const w = canvas.width;
+    const h = canvas.height;
+    if (w <= 0 || h <= 0) return;
 
-    // Aplicar refinamento baseado nos paths do fabric
     const objects = this.fabricCanvas.getObjects();
-    objects.forEach(obj => {
-      if (obj.type === 'path') {
-        const path = obj.path;
-        // Simplificado - em produção, seria necessário processar o path
-      }
-    });
+    const pathObj = [...objects].reverse().find(obj => obj.type === 'path');
+    if (!pathObj) return;
 
-    ctx.putImageData(imageData, 0, 0);
+    if (!this.committedImageData || this.committedImageData.width !== w || this.committedImageData.height !== h) {
+      this.committedImageData = ctx.getImageData(0, 0, w, h);
+    }
+    const data = this.committedImageData.data;
+    const width = this.committedImageData.width;
+    const height = this.committedImageData.height;
+
+    const strokePixels = this.getStrokePixels(pathObj, w, h, this.brushSize);
+    if (strokePixels.size === 0) {
+      this.fabricCanvas.remove(pathObj);
+      this.fabricCanvas.requestRenderAll();
+      ctx.putImageData(this.committedImageData, 0, 0);
+      return;
+    }
+
+    let originalData = null;
+    if (this.brushMode === 'add' && this.originalImage) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(this.originalImage, 0, 0);
+      originalData = tempCtx.getImageData(0, 0, width, height).data;
+    }
+
+    for (const key of strokePixels) {
+      const [px, py] = key.split(',').map(Number);
+      if (px < 0 || px >= width || py < 0 || py >= height) continue;
+      const i = (py * width + px) * 4;
+      if (this.brushMode === 'remove') {
+        data[i + 3] = 0;
+      } else {
+        if (originalData) {
+          data[i] = originalData[i];
+          data[i + 1] = originalData[i + 1];
+          data[i + 2] = originalData[i + 2];
+        }
+        data[i + 3] = 255;
+      }
+    }
+
+    ctx.putImageData(this.committedImageData, 0, 0);
+    this.fabricCanvas.remove(pathObj);
+    this.fabricCanvas.requestRenderAll();
+    this.updatePreview();
   }
 
   applyColorAdjustments() {
@@ -638,6 +759,7 @@ class BackgroundRemover {
     }
 
     ctx.putImageData(imageData, 0, 0);
+    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     this.updatePreview();
   }
 
@@ -668,6 +790,7 @@ class BackgroundRemover {
     }
 
     ctx.putImageData(imageData, 0, 0);
+    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     this.updatePreview();
   }
 
@@ -774,6 +897,7 @@ class BackgroundRemover {
     }
 
     ctx.putImageData(imageData, 0, 0);
+    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     this.updatePreview();
   }
 
@@ -805,6 +929,7 @@ class BackgroundRemover {
           tempCtx.drawImage(canvas, 0, 0);
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(tempCanvas, 0, 0);
+          this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           this.updatePreview();
         };
         img.src = this.customBackground.value;
@@ -816,6 +941,7 @@ class BackgroundRemover {
     tempCtx.drawImage(canvas, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(tempCanvas, 0, 0);
+    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     this.updatePreview();
   }
 
@@ -865,7 +991,7 @@ class BackgroundRemover {
 
     this.originalImage = null;
     this.processedImage = null;
-    this.imageData = null;
+    this.committedImageData = null;
     this.currentMode = 'basic';
     this.colorAdjustments = { brightness: 0, contrast: 0, saturation: 0 };
     this.currentFilter = 'none';

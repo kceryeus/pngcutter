@@ -22,7 +22,9 @@ const mimeTypes = {
 };
 
 const server = http.createServer((req, res) => {
-  let filePath = '.' + req.url;
+  const urlWithoutQuery = req.url.split('?')[0];
+  let filePath = '.' + urlWithoutQuery;
+  
   if (filePath === './') {
     filePath = './index.html';
   }
@@ -50,5 +52,6 @@ server.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
   console.log(`📁 Servindo arquivos de: ${process.cwd()}`);
 });
+
 
 

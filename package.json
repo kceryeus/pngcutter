@@ -1,8 +1,8 @@
 {
-  "name": "pngcutter",
-  "version": "1.0.0",
-  "description": "Ferramenta web gratuita para remover backgrounds de imagens",
-  "main": "index.html",
+  "name": "moz-image-studio",
+  "version": "2.0.0",
+  "description": "Ferramenta web completa para edição, redimensionamento em lote, conversão de formatos e remoção de backgrounds",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
@@ -16,11 +16,10 @@
   ],
   "author": "",
   "license": "MIT",
-  "devDependencies": {},
   "dependencies": {
     "@imgly/background-removal": "^1.2.0",
     "colorjs.io": "^0.4.3",
-    "fabric": "^5.3.0"
+    "fabric": "^5.3.0",
+    "jszip": "^3.10.1"
   }
 }
-

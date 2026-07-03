@@ -81,13 +81,13 @@ const translations = {
       pro: {
         title: 'Pro',
         price: '50 MT',
-        period: 'por mês',
+        period: 'por 7 dias',
         features: [
           'Tudo do plano Gratuito',
-          'Armazenamento até 500MB',
-          'Histórico de conversões',
-          'Suporte prioritário',
-          'Sem limites de processamento'
+          'Acesso Ilimitado',
+          'Redimensionamento em Lote',
+          'Conversor de Formatos',
+          'Suporte prioritário'
         ],
         button: 'Subscrever Agora',
         popular: 'Mais Popular'
@@ -183,13 +183,13 @@ const translations = {
       pro: {
         title: 'Pro',
         price: '50 MT',
-        period: 'per month',
+        period: 'per 7 days',
         features: [
           'Everything in Free',
-          'Storage up to 500MB',
-          'Conversion history',
-          'Priority support',
-          'Unlimited processing'
+          'Unlimited Access',
+          'Bulk Resizer',
+          'Format Converter',
+          'Priority support'
         ],
         button: 'Subscribe Now',
         popular: 'Most Popular'
@@ -258,8 +258,8 @@ function renderLanding() {
     <nav class="landing-topbar">
       <div class="landing-topbar-content">
         <a href="index.html" class="landing-logo">
-          <img src="src/assets/logo.png" alt="PNG Cutter" style="width: 32px; height: 32px; object-fit: contain;">
-          <span>PNG Cutter</span>
+          <img src="src/assets/logo.png" alt="Moz Image Studio" style="width: 32px; height: 32px; object-fit: contain;">
+          <span>Moz Image Studio</span>
         </a>
         <div class="landing-nav-links">
           <a href="#home" class="nav-link">${t('topbar.home')}</a>
@@ -278,7 +278,7 @@ function renderLanding() {
     <div class="landing-page">
       <div class="landing-hero" id="home">
         <div class="landing-hero-content">
-          <img src="src/assets/logo.png" alt="PNG Cutter" class="landing-logo-large">
+          <img src="src/assets/logo.png" alt="Moz Image Studio" class="landing-logo-large">
           <h1 class="landing-title">${t('title')}</h1>
           <p class="landing-subtitle">${t('subtitle')}</p>
           <a href="app.html" class="landing-cta-button">${t('getStarted')}</a>
@@ -404,8 +404,8 @@ function renderLanding() {
       <div class="footer-content">
         <div class="footer-section">
           <div class="footer-logo">
-            <img src="src/assets/logo.png" alt="PNG Cutter" style="width: 24px; height: 24px; object-fit: contain;">
-            <span>PNG Cutter</span>
+            <img src="src/assets/logo.png" alt="Moz Image Studio" style="width: 24px; height: 24px; object-fit: contain;">
+            <span>Moz Image Studio</span>
           </div>
           <p class="footer-tagline">${t('subtitle')}</p>
         </div>
@@ -443,6 +443,51 @@ function renderLanding() {
   
   // Adicionar eventos de troca de idioma
   attachLanguageSwitcher();
+
+  // Configurar autenticação Clerk
+  setupClerkAuth();
+}
+
+async function setupClerkAuth() {
+  // Esperar o Clerk carregar
+  let retries = 0;
+  while (!window.Clerk && retries < 20) {
+    await new Promise(r => setTimeout(r, 100));
+    retries++;
+  }
+  
+  let isClerkLoaded = false;
+  if (window.Clerk) {
+    try {
+      await window.Clerk.load();
+      isClerkLoaded = true;
+    } catch (e) {
+      console.warn('Clerk falhou ao carregar, fallback offline ativado', e);
+    }
+  }
+
+  // Interceptar todos os links para app.html
+  const appLinks = document.querySelectorAll('a[href="app.html"]');
+  appLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      if (isClerkLoaded && window.Clerk && window.Clerk.user) {
+        // Já tem sessão, redirecionar normal
+        window.location.href = 'app.html';
+      } else if (isClerkLoaded && window.Clerk) {
+        // Não tem sessão, abrir modal de login
+        window.Clerk.openSignIn({
+          afterSignInUrl: 'app.html',
+          afterSignUpUrl: 'app.html'
+        });
+      } else {
+        // Fallback caso o script do Clerk falhe (ex: chave invalida)
+        sessionStorage.setItem('mock_clerk_auth', 'true');
+        window.location.href = 'app.html';
+      }
+    });
+  });
 }
 
 // Trocar idioma
@@ -494,5 +539,33 @@ function attachSmoothScroll() {
 }
 
 // Inicializar quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', renderLanding);
+document.addEventListener('DOMContentLoaded', () => {
+  renderLanding();
+  
+  // Create cursor glow element
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+
+  let isMouseMoving = false;
+  let timeoutId;
+
+  document.addEventListener('mousemove', (e) => {
+    glow.style.opacity = '1';
+    // Use requestAnimationFrame for smoother following
+    requestAnimationFrame(() => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    });
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      glow.style.opacity = '0';
+    }, 1000);
+  });
+
+  document.addEventListener('mouseleave', () => {
+    glow.style.opacity = '0';
+  });
+});
 
