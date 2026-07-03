@@ -2,7 +2,6 @@
   "name": "moz-image-studio",
   "version": "2.0.0",
   "description": "Ferramenta web completa para edição, redimensionamento em lote, conversão de formatos e remoção de backgrounds",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
