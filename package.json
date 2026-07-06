@@ -1,5 +1,5 @@
 {
-  "name": "moz-image-studio",
+  "name": "png-cutter",
   "version": "2.0.0",
   "description": "Ferramenta web completa para edição, redimensionamento em lote, conversão de formatos e remoção de backgrounds",
   "scripts": {

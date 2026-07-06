@@ -254,7 +254,7 @@ class FormatConverter {
       const content = await zip.generateAsync({ type: 'blob' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(content);
-      a.download = 'moz-image-studio-converted.zip';
+      a.download = 'png-cutter-converted.zip';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -25,9 +25,9 @@ class Sidebar {
     this.container.innerHTML = `
       <div class="sidebar-content">
         <div class="sidebar-header">
-          <a href="index.html" class="sidebar-logo">
-            <img src="src/assets/logo.png" alt="Moz Image Studio" class="sidebar-logo-img">
-            <span class="sidebar-logo-text">Moz Image Studio</span>
+          <a href="index.html" class="sidebar-logo" title="PNG Cutter – Format Convert & Resize">
+            <img src="src/assets/logo.png" alt="PNG Cutter – Format Convert & Resize" class="sidebar-logo-img">
+            <span class="sidebar-logo-text">PNG Cutter</span>
           </a>
           <button class="sidebar-pin-btn" title="Fixar sidebar" aria-label="Fixar sidebar">
             ${getIcon('pin')}

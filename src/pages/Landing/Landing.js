@@ -13,8 +13,9 @@ class Landing {
     container.innerHTML = `
       <div class="landing-hero">
         <div class="landing-hero-content">
-          <img src="src/assets/logo.png" alt="PNG Cutter" class="landing-logo-large">
+          <img src="src/assets/logo.png" alt="PNG Cutter – Format Convert & Resize" class="landing-logo-large">
           <h1 class="landing-title">${i18n.t('landing.title')}</h1>
+          <div class="landing-brand-badge">${i18n.t('landing.tagline')}</div>
           <p class="landing-subtitle">${i18n.t('landing.subtitle')}</p>
           <a href="#/background-remover" class="landing-cta-button">
             ${i18n.t('landing.getStarted')}

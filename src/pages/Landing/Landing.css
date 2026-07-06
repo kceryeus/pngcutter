@@ -239,12 +239,26 @@ html[data-theme="dark"] .landing-topbar {
   font-size: 3rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   line-height: 1.2;
   background: var(--color-primary-gradient);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.landing-brand-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 0.5px;
+  box-shadow: var(--shadow-sm);
 }
 
 .landing-subtitle {
@@ -738,5 +752,39 @@ html[data-theme="dark"] .landing-topbar {
   .footer-social {
     justify-content: center;
   }
+}
+
+/* Estilos para documentos legais (Termos e Privacidade) */
+.modal-content.legal-modal {
+  max-width: 720px;
+  width: 92%;
+  max-height: 85vh;
+}
+
+.legal-doc {
+  text-align: left;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.legal-doc h4 {
+  font-size: 1.1rem;
+  margin-top: 1.2rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.legal-doc p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.8rem;
+}
+
+.legal-doc code {
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.875rem;
 }
 

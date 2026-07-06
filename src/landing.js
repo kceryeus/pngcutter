@@ -1,11 +1,13 @@
-// Script standalone para a landing page (sem MOZ-CHOP)
 import { getIcon } from './utils/icons.js';
+import Modal from './components/Modal/Modal.js';
+import { legalTexts } from './utils/legalTexts.js';
 
 // Traduções simples para a landing page
 const translations = {
   pt: {
     title: 'PNG Cutter',
-    subtitle: 'Remova o background das suas imagens de forma rápida e gratuita. Converta para PNG transparente com apenas alguns cliques.',
+    tagline: 'Format Convert & Resize',
+    subtitle: 'Conversão de formatos, redimensionamento em lote e remoção de fundo com alta velocidade e precisão.',
     getStarted: 'Começar Agora',
     features: {
       title: 'Funcionalidades',
@@ -94,20 +96,23 @@ const translations = {
       }
     },
     footer: {
-      rights: '© 2025 PNG Cutter. Todos os direitos reservados.',
+      rights: '© 2026 PNG Cutter. Todos os direitos reservados.',
       madeWith: 'Feito com',
       by: 'por',
       links: {
         about: 'Sobre',
         features: 'Funcionalidades',
         pricing: 'Preços',
-        contact: 'Contacto'
+        contact: 'Contacto',
+        terms: 'Termos de Uso',
+        privacy: 'Política de Privacidade'
       }
     }
   },
   en: {
     title: 'PNG Cutter',
-    subtitle: 'Remove backgrounds from your images quickly and for free. Convert to transparent PNG with just a few clicks.',
+    tagline: 'Format Convert & Resize',
+    subtitle: 'Fast and precise format conversion, bulk resizing, and background removal.',
     getStarted: 'Get Started',
     features: {
       title: 'Features',
@@ -196,14 +201,16 @@ const translations = {
       }
     },
     footer: {
-      rights: '© 2025 PNG Cutter. All rights reserved.',
+      rights: '© 2026 PNG Cutter. All rights reserved.',
       madeWith: 'Made with',
       by: 'by',
       links: {
         about: 'About',
         features: 'Features',
         pricing: 'Pricing',
-        contact: 'Contact'
+        contact: 'Contact',
+        terms: 'Terms of Use',
+        privacy: 'Privacy Policy'
       }
     }
   }
@@ -258,11 +265,11 @@ function renderLanding() {
     <nav class="landing-topbar">
       <div class="landing-topbar-content">
         <a href="index.html" class="landing-logo">
-          <img src="src/assets/logo.png" alt="Moz Image Studio" style="width: 32px; height: 32px; object-fit: contain;">
-          <span>Moz Image Studio</span>
+          <img src="src/assets/logo.png" alt="PNG Cutter – Format Convert & Resize" style="width: 32px; height: 32px; object-fit: contain;">
+          <span>PNG Cutter</span>
         </a>
         <div class="landing-nav-links">
-          <a href="#home" class="nav-link">${t('topbar.home')}</a>
+          <a href="#home">${t('topbar.home')}</a>
           <a href="#features" class="nav-link">${t('topbar.features')}</a>
           <a href="#how-it-works" class="nav-link">${t('topbar.howItWorks')}</a>
           <a href="#pricing" class="nav-link">${t('topbar.pricing')}</a>
@@ -278,8 +285,9 @@ function renderLanding() {
     <div class="landing-page">
       <div class="landing-hero" id="home">
         <div class="landing-hero-content">
-          <img src="src/assets/logo.png" alt="Moz Image Studio" class="landing-logo-large">
+          <img src="src/assets/logo.png" alt="PNG Cutter" class="landing-logo-large">
           <h1 class="landing-title">${t('title')}</h1>
+          <div class="landing-brand-badge">${t('tagline')}</div>
           <p class="landing-subtitle">${t('subtitle')}</p>
           <a href="app.html" class="landing-cta-button">${t('getStarted')}</a>
         </div>
@@ -404,8 +412,8 @@ function renderLanding() {
       <div class="footer-content">
         <div class="footer-section">
           <div class="footer-logo">
-            <img src="src/assets/logo.png" alt="Moz Image Studio" style="width: 24px; height: 24px; object-fit: contain;">
-            <span>Moz Image Studio</span>
+            <img src="src/assets/logo.png" alt="PNG Cutter – Format Convert & Resize" style="width: 24px; height: 24px; object-fit: contain;">
+            <span>PNG Cutter</span>
           </div>
           <p class="footer-tagline">${t('subtitle')}</p>
         </div>
@@ -416,10 +424,18 @@ function renderLanding() {
             <li><a href="#home">${t('footer.links.about')}</a></li>
             <li><a href="#features">${t('footer.links.features')}</a></li>
             <li><a href="#pricing">${t('footer.links.pricing')}</a></li>
-            <li><a href="#contact">${t('footer.links.contact')}</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#" id="open-terms-link">${t('footer.links.terms')}</a></li>
+            <li><a href="#" id="open-privacy-link">${t('footer.links.privacy')}</a></li>
           </ul>
         </div>
         
+        <!-- Redes Sociais (Comentado temporariamente)
         <div class="footer-section">
           <h4>Redes Sociais</h4>
           <div class="footer-social">
@@ -430,6 +446,7 @@ function renderLanding() {
             <a href="#" aria-label="GitHub" class="social-link">${getIcon('github')}</a>
           </div>
         </div>
+        -->
       </div>
       
       <div class="footer-bottom">
@@ -443,6 +460,9 @@ function renderLanding() {
   
   // Adicionar eventos de troca de idioma
   attachLanguageSwitcher();
+
+  // Adicionar eventos dos modais de Termos e Privacidade
+  attachLegalModals();
 
   // Configurar autenticação Clerk
   setupClerkAuth();
@@ -502,6 +522,44 @@ function attachLanguageSwitcher() {
       setLanguage(newLang);
     });
   });
+}
+
+// Modais Legais (Termos e Privacidade)
+function attachLegalModals() {
+  const termsBtn = document.getElementById('open-terms-link');
+  const privacyBtn = document.getElementById('open-privacy-link');
+
+  if (termsBtn) {
+    termsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const lang = currentLanguage;
+      const modal = new Modal({
+        title: legalTexts[lang].termsTitle,
+        message: legalTexts[lang].termsContent,
+        showCancel: false,
+        confirmText: lang === 'pt' ? 'Fechar' : 'Close'
+      });
+      modal.show();
+      const contentEl = modal.modal?.querySelector('.modal-content');
+      if (contentEl) contentEl.classList.add('legal-modal');
+    });
+  }
+
+  if (privacyBtn) {
+    privacyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const lang = currentLanguage;
+      const modal = new Modal({
+        title: legalTexts[lang].privacyTitle,
+        message: legalTexts[lang].privacyContent,
+        showCancel: false,
+        confirmText: lang === 'pt' ? 'Fechar' : 'Close'
+      });
+      modal.show();
+      const contentEl = modal.modal?.querySelector('.modal-content');
+      if (contentEl) contentEl.classList.add('legal-modal');
+    });
+  }
 }
 
 // Navegação suave

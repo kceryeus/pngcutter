@@ -280,7 +280,7 @@ class BulkResizer {
       const content = await zip.generateAsync({ type: 'blob' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(content);
-      a.download = 'moz-image-studio-resized.zip';
+      a.download = 'png-cutter-resized.zip';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
