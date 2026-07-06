@@ -15,7 +15,7 @@
 
 .sidebar.expanded,
 .sidebar.pinned {
-  width: 260px;
+  width: 290px;
 }
 
 .sidebar-content {
@@ -207,13 +207,14 @@
   font-weight: 500;
   transform: translateX(-10px);
   white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .sidebar.expanded .sidebar-item-label,
 .sidebar.pinned .sidebar-item-label {
   opacity: 1;
   transform: translateX(0);
+  white-space: normal;
+  line-height: 1.3;
 }
 
 @media (max-width: 768px) {
@@ -223,7 +224,40 @@
   
   .sidebar.expanded,
   .sidebar.pinned {
-    width: 260px;
+    width: 290px;
   }
+}
+
+.sidebar-pro-badge {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-primary-gradient);
+  color: var(--text-inverse);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.sidebar-pro-badge svg {
+  width: 10px;
+  height: 10px;
+  color: currentColor;
+}
+
+.sidebar.expanded .sidebar-pro-badge,
+.sidebar.pinned .sidebar-pro-badge {
+  display: flex;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sidebar-item.is-pro-locked {
+  position: relative;
 }
 

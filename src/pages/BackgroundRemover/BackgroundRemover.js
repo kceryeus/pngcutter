@@ -1,5 +1,6 @@
 import i18n from '../../i18n/i18n.js';
 import Modal from '../../components/Modal/Modal.js';
+import PaymentModal from '../../components/PaymentModal/PaymentModal.js';
 import { getIcon } from '../../utils/icons.js';
 import premium from '../../utils/premium.js';
 
@@ -11,10 +12,9 @@ let fabric = null;
 // Carregar bibliotecas dinamicamente
 async function loadLibraries() {
   try {
-    if (premium.hasFeature('advancedRemoval')) {
-      const bgRemoval = await import('@imgly/background-removal');
-      removeBackgroundLib = bgRemoval.removeBackground;
-    }
+    // Always load background removal library (core feature)
+    const bgRemoval = await import('@imgly/background-removal');
+    removeBackgroundLib = bgRemoval.removeBackground;
     
     if (premium.hasFeature('colorPalettes')) {
       const colorjs = await import('colorjs.io');
@@ -75,25 +75,39 @@ class BackgroundRemover {
         </div>
         
         <div class="background-remover-preview" id="preview-area" style="display: none;">
-          <div class="preview-section preview-original">
-            <h3>${i18n.t('backgroundRemover.original')}</h3>
-            <div class="preview-image-container">
-              <img id="original-preview" alt="Original">
-            </div>
-          </div>
-          
-          <div class="preview-section preview-result">
-            <h3>${i18n.t('backgroundRemover.result')}</h3>
-            <div class="preview-image-container" id="result-container">
-              <canvas id="processed-canvas"></canvas>
-              <div class="preview-loading" id="processing-indicator" style="display: none;">
-                <div class="spinner"></div>
-                <p>${i18n.t('backgroundRemover.processing')}</p>
+          <div class="preview-images-column">
+            <div class="preview-images-row">
+              <div class="preview-section preview-original">
+                <h3>${i18n.t('backgroundRemover.original')}</h3>
+                <div class="preview-image-container">
+                  <img id="original-preview" alt="Original">
+                </div>
               </div>
+              
+              <div class="preview-section preview-result">
+                <h3>${i18n.t('backgroundRemover.result')}</h3>
+                <div class="preview-image-container" id="result-container">
+                  <canvas id="processed-canvas"></canvas>
+                  <div class="preview-loading" id="processing-indicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>${i18n.t('backgroundRemover.processing')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="preview-actions">
+              <button class="action-btn btn-download" id="download-btn" disabled>
+                ${getIcon('download')} ${i18n.t('backgroundRemover.download')}
+              </button>
+              <button class="action-btn btn-reset" id="reset-btn">
+                ${i18n.t('backgroundRemover.reset')}
+              </button>
             </div>
           </div>
           
           <div class="preview-controls" id="preview-controls">
+            <h3 class="controls-title">${i18n.t('backgroundRemover.mode.basic')}</h3>
             <div class="control-group">
               <label>${i18n.t('backgroundRemover.mode.basic')}</label>
               <div class="mode-selector">
@@ -107,9 +121,8 @@ class BackgroundRemover {
               </div>
             </div>
             
-            ${isPremium ? `
-            <div class="control-group" id="refine-controls">
-              <label>${i18n.t('backgroundRemover.refine')}</label>
+            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="refine-controls">
+              <label>${i18n.t('backgroundRemover.refine')} ${!isPremium ? getIcon('premium') : ''}</label>
               <div class="refine-controls">
                 <button class="refine-btn ${this.brushMode === 'add' ? 'active' : ''}" data-mode="add">
                   ${getIcon('plus')} ${i18n.t('backgroundRemover.refine.add')}
@@ -122,8 +135,8 @@ class BackgroundRemover {
               </div>
             </div>
             
-            <div class="control-group" id="color-controls">
-              <label>${i18n.t('backgroundRemover.colors')}</label>
+            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="color-controls">
+              <label>${i18n.t('backgroundRemover.colors')} ${!isPremium ? getIcon('premium') : ''}</label>
               <div class="color-controls">
                 <div class="color-adjustments">
                   <div class="adjustment-item">
@@ -153,8 +166,8 @@ class BackgroundRemover {
               </div>
             </div>
             
-            <div class="control-group" id="filter-controls">
-              <label>${i18n.t('backgroundRemover.filters')}</label>
+            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="filter-controls">
+              <label>${i18n.t('backgroundRemover.filters')} ${!isPremium ? getIcon('premium') : ''}</label>
               <select id="filter-select" class="filter-select">
                 <option value="none">${i18n.t('backgroundRemover.filters.none')}</option>
                 <option value="vintage">${i18n.t('backgroundRemover.filters.vintage')}</option>
@@ -165,8 +178,8 @@ class BackgroundRemover {
               </select>
             </div>
             
-            <div class="control-group" id="background-controls">
-              <label>${i18n.t('backgroundRemover.background')}</label>
+            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="background-controls">
+              <label>${i18n.t('backgroundRemover.background')} ${!isPremium ? getIcon('premium') : ''}</label>
               <div class="background-controls">
                 <select id="background-type" class="background-select">
                   <option value="none">${i18n.t('backgroundRemover.background.none')}</option>
@@ -178,27 +191,15 @@ class BackgroundRemover {
                 <input type="file" id="background-image" accept="image/*" style="display: none;">
               </div>
             </div>
-            ` : ''}
             
-            <div class="control-group" id="export-controls">
+            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="export-controls">
               <label>${i18n.t('backgroundRemover.export')}</label>
               <select id="export-format" class="export-select">
                 <option value="png">${i18n.t('backgroundRemover.export.png')}</option>
-                ${isPremium ? `
-                <option value="jpg">${i18n.t('backgroundRemover.export.jpg')}</option>
-                <option value="webp">${i18n.t('backgroundRemover.export.webp')}</option>
-                ` : ''}
+                <option value="jpg" ${!isPremium ? 'disabled' : ''}>${i18n.t('backgroundRemover.export.jpg')} ${!isPremium ? 'PRO' : ''}</option>
+                <option value="webp" ${!isPremium ? 'disabled' : ''}>${i18n.t('backgroundRemover.export.webp')} ${!isPremium ? 'PRO' : ''}</option>
               </select>
             </div>
-          </div>
-          
-          <div class="preview-actions">
-            <button class="action-btn btn-download" id="download-btn" disabled>
-              ${getIcon('download')} ${i18n.t('backgroundRemover.download')}
-            </button>
-            <button class="action-btn btn-reset" id="reset-btn">
-              ${i18n.t('backgroundRemover.reset')}
-            </button>
           </div>
         </div>
       </div>
@@ -272,13 +273,30 @@ class BackgroundRemover {
       resetBtn.addEventListener('click', () => this.reset());
     }
 
+    const handlePremiumClick = (e) => {
+      const target = e.target;
+      if (target.closest('.premium-locked') || target.disabled || target.classList.contains('mode-btn') && target.dataset.mode === 'advanced' && !isPremium) {
+        e.preventDefault();
+        e.stopPropagation();
+        const paymentModal = new PaymentModal();
+        paymentModal.show(() => {
+          if (window.Clerk && window.Clerk.user) {
+            if (!window.Clerk.user.publicMetadata) window.Clerk.user.publicMetadata = {};
+            window.Clerk.user.publicMetadata.isPremium = true;
+            premium.setPremium(true);
+            window.location.reload();
+          }
+        });
+        return true;
+      }
+      return false;
+    };
+
     // Mode selection
     modeBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
-        if (btn.disabled) {
-          Modal.info(i18n.t('backgroundRemover.premium.feature'), () => {});
-          return;
-        }
+        if (handlePremiumClick({ target: btn, preventDefault: () => e.preventDefault(), stopPropagation: () => e.stopPropagation() })) return;
+        
         this.currentMode = btn.dataset.mode;
         modeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -287,6 +305,16 @@ class BackgroundRemover {
         }
       });
     });
+
+    // Add listener to locked sections
+    if (!isPremium) {
+      document.querySelectorAll('.premium-locked').forEach(el => {
+        el.addEventListener('click', handlePremiumClick, true);
+      });
+      if (exportFormat) {
+        exportFormat.addEventListener('mousedown', handlePremiumClick, true);
+      }
+    }
 
     // Refine controls (Premium)
     if (isPremium && refineBtns && refineBtns.length > 0) {
@@ -434,12 +462,25 @@ class BackgroundRemover {
     const uploadArea = document.getElementById('upload-area');
     const previewArea = document.getElementById('preview-area');
     const processingIndicator = document.getElementById('processing-indicator');
+    const processingText = document.getElementById('processing-text') || document.querySelector('#processing-indicator p');
     const downloadBtn = document.getElementById('download-btn');
 
     if (uploadArea) uploadArea.style.display = 'none';
-    if (previewArea) previewArea.style.display = 'block';
+    if (previewArea) previewArea.style.display = 'grid';
     if (processingIndicator) processingIndicator.style.display = 'flex';
     if (downloadBtn) downloadBtn.disabled = true;
+
+    // Ensure ML library is loaded before processing
+    if (!removeBackgroundLib) {
+      if (processingText) {
+        processingText.innerHTML = `Inicializando motor de Inteligência Artificial...<br><span style="font-size: 11px; opacity: 0.7; margin-top: 6px; display: block; line-height: 1.4;">A carregar ferramentas de processamento (apenas na primeira execução)</span>`;
+      }
+      await loadLibraries();
+    }
+
+    if (processingText) {
+      processingText.innerHTML = `Removendo fundo automaticamente...<br><span style="font-size: 11px; opacity: 0.7; margin-top: 6px; display: block; line-height: 1.4;">Descarregando modelo de precisão. Se a sua ligação à Internet for mais lenta, isto pode demorar um pouco. Por favor, aguarde.</span>`;
+    }
 
     try {
       const canvas = document.getElementById('processed-canvas');
@@ -507,10 +548,43 @@ class BackgroundRemover {
 
   async processBasic() {
     const canvas = document.getElementById('processed-canvas');
-    canvas.width = this.originalImage.width;
-    canvas.height = this.originalImage.height;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+    // Use ML library if available (preferred)
+    if (removeBackgroundLib) {
+      try {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput?.files[0];
+        let resultBlob;
+
+        if (file) {
+          resultBlob = await removeBackgroundLib(file);
+        } else {
+          // Convert original image to blob
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = this.originalImage.width;
+          tempCanvas.height = this.originalImage.height;
+          const tempCtx = tempCanvas.getContext('2d');
+          tempCtx.drawImage(this.originalImage, 0, 0);
+          const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
+          resultBlob = await removeBackgroundLib(blob);
+        }
+
+        const img = await this.blobToImage(resultBlob);
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        this.processedImage = canvas;
+        this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        return;
+      } catch (error) {
+        console.warn('ML background removal failed, falling back to basic algorithm:', error);
+      }
+    }
+
+    // Fallback: naive corner-sampling algorithm
+    canvas.width = this.originalImage.width;
+    canvas.height = this.originalImage.height;
     ctx.drawImage(this.originalImage, 0, 0);
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
@@ -719,79 +793,19 @@ class BackgroundRemover {
   }
 
   applyColorAdjustments() {
-    if (!this.processedImage) return;
-
-    const canvas = this.processedImage;
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
-    const brightness = this.colorAdjustments.brightness / 100;
-    const contrast = (this.colorAdjustments.contrast + 100) / 100;
-    const saturation = (this.colorAdjustments.saturation + 100) / 100;
-
-    for (let i = 0; i < data.length; i += 4) {
-      if (data[i + 3] === 0) continue; // Skip transparent pixels
-
-      let r = data[i];
-      let g = data[i + 1];
-      let b = data[i + 2];
-
-      // Brightness
-      r += brightness * 255;
-      g += brightness * 255;
-      b += brightness * 255;
-
-      // Contrast
-      r = ((r - 128) * contrast) + 128;
-      g = ((g - 128) * contrast) + 128;
-      b = ((b - 128) * contrast) + 128;
-
-      // Saturation
-      const gray = r * 0.299 + g * 0.587 + b * 0.114;
-      r = gray + (r - gray) * saturation;
-      g = gray + (g - gray) * saturation;
-      b = gray + (b - gray) * saturation;
-
-      data[i] = Math.max(0, Math.min(255, r));
-      data[i + 1] = Math.max(0, Math.min(255, g));
-      data[i + 2] = Math.max(0, Math.min(255, b));
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    this.updatePreview();
+    this.renderImage();
   }
 
   applyFilter() {
-    if (!this.processedImage) return;
+    this.renderImage();
+  }
 
-    const canvas = this.processedImage;
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
+  applyPalette(paletteName) {
+    this.renderImage();
+  }
 
-    switch (this.currentFilter) {
-      case 'vintage':
-        this.applyVintageFilter(data);
-        break;
-      case 'blackwhite':
-        this.applyBlackWhiteFilter(data);
-        break;
-      case 'sepia':
-        this.applySepiaFilter(data);
-        break;
-      case 'cool':
-        this.applyCoolFilter(data);
-        break;
-      case 'warm':
-        this.applyWarmFilter(data);
-        break;
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    this.updatePreview();
+  applyBackground() {
+    this.renderImage();
   }
 
   applyVintageFilter(data) {
@@ -846,14 +860,8 @@ class BackgroundRemover {
     }
   }
 
-  applyPalette(paletteName) {
-    if (!this.processedImage || !Color) return;
-
-    const canvas = this.processedImage;
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
+  applyPaletteToData(data, paletteName) {
+    if (!Color) return;
     const palettes = {
       vibrant: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8'],
       pastel: ['#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA'],
@@ -865,7 +873,6 @@ class BackgroundRemover {
     const palette = palettes[paletteName];
     if (!palette) return;
 
-    // Quantização de cores simplificada
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] === 0) continue;
       
@@ -873,7 +880,6 @@ class BackgroundRemover {
       const g = data[i + 1];
       const b = data[i + 2];
       
-      // Encontrar cor mais próxima na paleta
       let minDist = Infinity;
       let closestColor = palette[0];
       
@@ -895,23 +901,91 @@ class BackgroundRemover {
       data[i + 1] = c.srgb.g * 255;
       data[i + 2] = c.srgb.b * 255;
     }
-
-    ctx.putImageData(imageData, 0, 0);
-    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    this.updatePreview();
   }
 
-  applyBackground() {
-    if (!this.processedImage) return;
+  renderImage() {
+    if (!this.processedImage || !this.committedImageData) return;
 
     const canvas = this.processedImage;
     const ctx = canvas.getContext('2d');
+    
+    // 1. Start with a fresh copy of the clean background-removed image data (the baseline)
+    const imageData = new ImageData(
+      new Uint8ClampedArray(this.committedImageData.data),
+      this.committedImageData.width,
+      this.committedImageData.height
+    );
+    const data = imageData.data;
+
+    // 2. Apply color adjustments (brightness, contrast, saturation)
+    const brightness = this.colorAdjustments.brightness / 100;
+    const contrast = (this.colorAdjustments.contrast + 100) / 100;
+    const saturation = (this.colorAdjustments.saturation + 100) / 100;
+
+    const hasColorAdjustments = brightness !== 0 || contrast !== 1 || saturation !== 1;
+    if (hasColorAdjustments) {
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] === 0) continue;
+
+        let r = data[i];
+        let g = data[i + 1];
+        let b = data[i + 2];
+
+        // Brightness
+        r += brightness * 255;
+        g += brightness * 255;
+        b += brightness * 255;
+
+        // Contrast
+        r = ((r - 128) * contrast) + 128;
+        g = ((g - 128) * contrast) + 128;
+        b = ((b - 128) * contrast) + 128;
+
+        // Saturation
+        const gray = r * 0.299 + g * 0.587 + b * 0.114;
+        r = gray + (r - gray) * saturation;
+        g = gray + (g - gray) * saturation;
+        b = gray + (b - gray) * saturation;
+
+        data[i] = Math.max(0, Math.min(255, r));
+        data[i + 1] = Math.max(0, Math.min(255, g));
+        data[i + 2] = Math.max(0, Math.min(255, b));
+      }
+    }
+
+    // 3. Apply filter
+    if (this.currentFilter && this.currentFilter !== 'none') {
+      switch (this.currentFilter) {
+        case 'vintage':
+          this.applyVintageFilter(data);
+          break;
+        case 'blackwhite':
+          this.applyBlackWhiteFilter(data);
+          break;
+        case 'sepia':
+          this.applySepiaFilter(data);
+          break;
+        case 'cool':
+          this.applyCoolFilter(data);
+          break;
+        case 'warm':
+          this.applyWarmFilter(data);
+          break;
+      }
+    }
+
+    // 4. Apply palette quantization if active
+    const paletteSelect = document.getElementById('palette-select');
+    if (paletteSelect && paletteSelect.value !== 'none' && Color) {
+      this.applyPaletteToData(data, paletteSelect.value);
+    }
+
+    // 5. Render background
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = canvas.width;
     tempCanvas.height = canvas.height;
     const tempCtx = tempCanvas.getContext('2d');
 
-    // Desenhar background
     if (this.customBackground) {
       if (this.customBackground.type === 'color') {
         tempCtx.fillStyle = this.customBackground.value;
@@ -926,22 +1000,32 @@ class BackgroundRemover {
         const img = new Image();
         img.onload = () => {
           tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-          tempCtx.drawImage(canvas, 0, 0);
+          
+          // Draw the adjusted image on top
+          const imgCanvas = document.createElement('canvas');
+          imgCanvas.width = canvas.width;
+          imgCanvas.height = canvas.height;
+          imgCanvas.getContext('2d').putImageData(imageData, 0, 0);
+          tempCtx.drawImage(imgCanvas, 0, 0);
+          
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(tempCanvas, 0, 0);
-          this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           this.updatePreview();
         };
         img.src = this.customBackground.value;
-        return;
+        return; // Asynchronous image load handles the drawing
       }
     }
 
-    // Desenhar imagem processada sobre o background
-    tempCtx.drawImage(canvas, 0, 0);
+    // Draw the adjusted image on top of standard background
+    const imgCanvas = document.createElement('canvas');
+    imgCanvas.width = canvas.width;
+    imgCanvas.height = canvas.height;
+    imgCanvas.getContext('2d').putImageData(imageData, 0, 0);
+    tempCtx.drawImage(imgCanvas, 0, 0);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(tempCanvas, 0, 0);
-    this.committedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     this.updatePreview();
   }
 

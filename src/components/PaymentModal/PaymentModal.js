@@ -1,5 +1,5 @@
 import { getIcon } from '../../utils/icons.js';
-import Modal from '../Modal/Modal.js'; // Fallback para mensagens simples
+import Modal from '../Modal/Modal.js';
 
 class PaymentModal {
   constructor() {
@@ -10,7 +10,6 @@ class PaymentModal {
   show(onSuccessCallback) {
     this.onSuccess = onSuccessCallback;
     
-    // Adicionar link para CSS, se necessário
     if (!document.querySelector('link[href*="PaymentModal.css"]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -31,24 +30,15 @@ class PaymentModal {
         </div>
         
         <div class="payment-body">
-          <div class="payment-methods">
-            <div class="payment-method active">M-Pesa / e-Mola</div>
+          <div class="payment-info" style="margin-bottom: 24px; text-align: center; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+            <p style="margin-bottom: 12px;">Ao clicar no botão abaixo, será redirecionado para a plataforma segura do <strong>PaySuite</strong>, onde poderá efetuar o pagamento via MPesa, Emola ou Cartão de Crédito/Débito.</p>
           </div>
           
-          <div class="payment-form">
-            <label>Número de Telemóvel</label>
-            <div class="phone-input-group">
-              <span class="country-code">+258</span>
-              <input type="text" id="phone-number" placeholder="84 000 0000" maxlength="9" autocomplete="off">
-            </div>
-            <p class="payment-hint">Irá receber um prompt USSD no seu telemóvel para introduzir o PIN.</p>
-          </div>
+          <button class="payment-submit-btn" id="pay-btn" style="width: 100%;">Pagar com PaySuite (50 MT)</button>
           
-          <button class="payment-submit-btn" id="pay-btn">Pagar 50 MT</button>
-          
-          <div class="payment-loading" style="display: none;">
+          <div class="payment-loading" style="display: none; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-md);">
             <div class="spinner"></div>
-            <p>A aguardar confirmação via Paytek no seu telemóvel...</p>
+            <p>A iniciar processo de pagamento PaySuite...</p>
           </div>
         </div>
       </div>
@@ -63,30 +53,51 @@ class PaymentModal {
     closeBtn.addEventListener('click', () => this.close());
     
     const payBtn = this.container.querySelector('#pay-btn');
-    const phoneInput = this.container.querySelector('#phone-number');
     const loadingView = this.container.querySelector('.payment-loading');
+    const infoView = this.container.querySelector('.payment-info');
     
-    payBtn.addEventListener('click', () => {
-      const number = phoneInput.value.replace(/\s+/g, '');
-      if (number.length !== 9 || !/^(84|85|86|87)/.test(number)) {
-        alert('Por favor, introduza um número M-Pesa ou e-Mola válido (ex: 84xxxxxxx).');
-        return;
-      }
-      
+    payBtn.addEventListener('click', async () => {
       payBtn.style.display = 'none';
+      if (infoView) infoView.style.display = 'none';
       loadingView.style.display = 'flex';
       
-      // Simular chamada à API da Paytek
-      setTimeout(() => {
-        this.close();
-        
-        // Em ambiente de produção real, o backend receberia um webhook e atualizaria 
-        // os publicMetadata do Clerk. Aqui fazemos mock do sucesso no frontend.
-        Modal.success('Pagamento recebido com sucesso! Funcionalidades Premium desbloqueadas.', () => {
-          if (this.onSuccess) this.onSuccess();
+      try {
+        const clerkUserId = (window.Clerk && window.Clerk.user) ? window.Clerk.user.id : 'anonymous';
+        const cleanId = clerkUserId.replace(/[^a-zA-Z0-9]/g, '');
+        const referenceId = `PRO${cleanId}${Date.now()}`;
+
+        const response = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount: 50.00,
+            reference: referenceId,
+            description: 'PNG Cutter - Acesso Premium Pro (7 dias)',
+            return_url: `${window.location.origin}/app.html`
+          })
         });
-        
-      }, 3000);
+
+        const result = await response.json();
+        if (result.status === 'success' && result.data && result.data.checkout_url) {
+          localStorage.setItem('pending_payment_id', result.data.id);
+          window.location.href = result.data.checkout_url;
+        } else {
+          const errorMsg = result.message || 'Erro interno do servidor PaySuite ou chave de API inválida no ficheiro .env.';
+          alert(`Erro ao iniciar processo de pagamento: ${errorMsg}`);
+          console.error('Erro detalhado do PaySuite:', result);
+          payBtn.style.display = 'block';
+          if (infoView) infoView.style.display = 'block';
+          loadingView.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Erro no checkout:', err);
+        alert('Erro de rede ao iniciar o pagamento.');
+        payBtn.style.display = 'block';
+        if (infoView) infoView.style.display = 'block';
+        loadingView.style.display = 'none';
+      }
     });
   }
   

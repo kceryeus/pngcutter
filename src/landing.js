@@ -446,6 +446,9 @@ function renderLanding() {
 
   // Configurar autenticação Clerk
   setupClerkAuth();
+
+  // Configurar fluxo de pagamento PaySuite
+  setupPaymentFlow();
 }
 
 async function setupClerkAuth() {
@@ -466,8 +469,8 @@ async function setupClerkAuth() {
     }
   }
 
-  // Interceptar todos os links para app.html
-  const appLinks = document.querySelectorAll('a[href="app.html"]');
+  // Interceptar todos os links para app.html, exceto o botão Pro que inicia o pagamento
+  const appLinks = document.querySelectorAll('a[href="app.html"]:not(.pricing-button-pro)');
   appLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -568,4 +571,50 @@ document.addEventListener('DOMContentLoaded', () => {
     glow.style.opacity = '0';
   });
 });
+
+function setupPaymentFlow() {
+  const proBtn = document.querySelector('.pricing-button-pro');
+  if (proBtn) {
+    proBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      
+      const originalText = proBtn.textContent;
+      proBtn.textContent = 'A processar...';
+      proBtn.style.pointerEvents = 'none';
+
+      try {
+        const response = await fetch('/api/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount: 50.00,
+            reference: `PRO${Date.now()}`,
+            description: 'PNG Cutter - Acesso Premium Pro (7 dias)',
+            return_url: `${window.location.origin}/app.html`
+          })
+        });
+
+        const result = await response.json();
+        if (result.status === 'success' && result.data && result.data.checkout_url) {
+          // Guardar ID no localStorage como fallback de verificação
+          localStorage.setItem('pending_payment_id', result.data.id);
+          window.location.href = result.data.checkout_url;
+        } else {
+          const errorMsg = result.message || 'Erro interno do servidor PaySuite ou chave de API inválida no ficheiro .env.';
+          alert(`Erro ao iniciar processo de pagamento: ${errorMsg}`);
+          console.error('Erro detalhado do PaySuite:', result);
+          proBtn.textContent = originalText;
+          proBtn.style.pointerEvents = 'auto';
+        }
+      } catch (err) {
+        console.error('Erro no checkout:', err);
+        alert('Erro de rede ao iniciar o pagamento.');
+        proBtn.textContent = originalText;
+        proBtn.style.pointerEvents = 'auto';
+      }
+    });
+  }
+}
 

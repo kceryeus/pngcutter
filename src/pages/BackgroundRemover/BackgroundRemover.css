@@ -206,34 +206,39 @@
   transform: translateY(-1px);
 }
 
+/* ===== PREVIEW AREA - Two column layout ===== */
 .background-remover-preview {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  grid-template-areas:
-    "original result controls"
-    "actions  actions actions";
-  gap: var(--spacing-2xl);
+  grid-template-columns: 1fr 340px;
+  gap: var(--spacing-xl);
   margin-top: var(--spacing-2xl);
   animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
+  align-items: start;
+}
+
+/* Left column: images + actions */
+.preview-images-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+/* Side-by-side images */
+.preview-images-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
 }
 
 .preview-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-sm);
   animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.preview-original {
-  grid-area: original;
-}
-
-.preview-result {
-  grid-area: result;
-}
-
 .preview-section h3 {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -253,7 +258,7 @@
   border-radius: var(--border-radius-lg);
   overflow: hidden;
   border: 1px solid var(--border-color);
-  min-height: 320px;
+  min-height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,7 +285,7 @@ html[data-theme="dark"] .preview-image-container {
 .preview-image-container img,
 .preview-image-container canvas {
   max-width: 100%;
-  max-height: 460px;
+  max-height: 400px;
   object-fit: contain;
   display: block;
   border-radius: var(--border-radius);
@@ -340,23 +345,22 @@ html[data-theme="dark"] .preview-loading {
   margin: 0;
 }
 
+/* Actions row below images */
 .preview-actions {
-  grid-area: actions;
   display: flex;
   gap: var(--spacing-lg);
   justify-content: center;
-  margin-top: var(--spacing-2xl);
   animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s both;
 }
 
 .action-btn {
-  padding: 16px 40px;
+  padding: 14px 32px;
   border-radius: var(--border-radius-lg);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
-  min-width: 180px;
+  min-width: 160px;
   letter-spacing: 0.01em;
   position: relative;
   overflow: hidden;
@@ -366,6 +370,14 @@ html[data-theme="dark"] .preview-loading {
   background: var(--color-primary-gradient);
   color: var(--text-inverse);
   box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.btn-download svg {
+  width: 18px;
+  height: 18px;
 }
 
 .btn-download::before {
@@ -421,16 +433,48 @@ html[data-theme="dark"] .preview-loading {
   }
 }
 
+/* ===== RIGHT PANEL: Controls ===== */
 .preview-controls {
-  grid-area: controls;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-xl);
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
   background: var(--bg-secondary);
   border-radius: var(--border-radius-lg);
-  margin-top: var(--spacing-xl);
   box-shadow: var(--shadow-md);
+  position: sticky;
+  top: var(--spacing-lg);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+}
+
+/* Custom scrollbar for controls panel */
+.preview-controls::-webkit-scrollbar {
+  width: 5px;
+}
+
+.preview-controls::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.preview-controls::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.preview-controls::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.controls-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs) 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+  letter-spacing: -0.01em;
 }
 
 .control-group {
@@ -440,10 +484,10 @@ html[data-theme="dark"] .preview-loading {
 }
 
 .control-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 2px;
 }
 
 .mode-selector {
@@ -453,9 +497,9 @@ html[data-theme="dark"] .preview-loading {
 
 .mode-btn {
   flex: 1;
-  padding: 12px 24px;
+  padding: 10px 16px;
   border-radius: var(--border-radius-md);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -498,9 +542,9 @@ html[data-theme="dark"] .preview-loading {
 }
 
 .refine-btn {
-  padding: 10px 20px;
+  padding: 8px 14px;
   border-radius: var(--border-radius-md);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -531,7 +575,7 @@ html[data-theme="dark"] .preview-loading {
 
 .brush-slider {
   flex: 1;
-  min-width: 150px;
+  min-width: 80px;
   height: 6px;
   border-radius: 3px;
   background: var(--bg-primary);
@@ -561,10 +605,10 @@ html[data-theme="dark"] .preview-loading {
 }
 
 .brush-size-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-secondary);
-  min-width: 50px;
+  min-width: 40px;
   text-align: right;
 }
 
@@ -587,7 +631,7 @@ html[data-theme="dark"] .preview-loading {
 }
 
 .adjustment-item label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -632,9 +676,9 @@ html[data-theme="dark"] .preview-loading {
 .background-select,
 .export-select {
   flex: 1;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: var(--border-radius-md);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -661,9 +705,9 @@ html[data-theme="dark"] .preview-loading {
 }
 
 .apply-palette-btn {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: var(--border-radius-md);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -671,6 +715,7 @@ html[data-theme="dark"] .preview-loading {
   color: var(--text-inverse);
   border: none;
   box-shadow: var(--shadow-sm);
+  white-space: nowrap;
 }
 
 .apply-palette-btn:hover {
@@ -685,42 +730,38 @@ html[data-theme="dark"] .preview-loading {
 }
 
 #background-color {
-  width: 60px;
-  height: 40px;
+  width: 50px;
+  height: 36px;
   border-radius: var(--border-radius-md);
   border: 2px solid var(--border-color);
   cursor: pointer;
 }
 
 #background-image {
-  padding: 8px;
+  padding: 6px;
   border-radius: var(--border-radius-md);
   border: 2px solid var(--border-color);
   background: var(--bg-primary);
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
 }
 
-.btn-download {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-
-.btn-download svg {
-  width: 18px;
-  height: 18px;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .background-remover-preview {
+    grid-template-columns: 1fr;
+  }
+  
+  .preview-controls {
+    position: static;
+    max-height: none;
+  }
 }
 
 @media (max-width: 768px) {
-  .background-remover-preview {
+  .preview-images-row {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "original"
-      "result"
-      "controls"
-      "actions";
   }
   
   .preview-actions {
@@ -732,7 +773,7 @@ html[data-theme="dark"] .preview-loading {
   }
   
   .preview-controls {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
   }
   
   .refine-controls {
@@ -754,3 +795,37 @@ html[data-theme="dark"] .preview-loading {
   }
 }
 
+/* Premium Locked State */
+.premium-locked {
+  position: relative;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+.premium-locked::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.premium-locked:hover {
+  opacity: 0.9;
+}
+
+.premium-locked * {
+  pointer-events: none; /* Let the container handle clicks */
+}
+
+.premium-locked label svg {
+  width: 14px;
+  height: 14px;
+  color: #fbbf24;
+  margin-left: 4px;
+  vertical-align: middle;
+}
