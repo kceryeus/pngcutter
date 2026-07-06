@@ -27,9 +27,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  // Preço definido estritamente no backend para evitar manipulação de valores pelo utilizador no frontend.
-  // IMPORTANTE: Alterar de "1.00" para "50.00" quando avançar para produção.
-  const amount = "10.00";
+  const amount = req.body.amount ? String(req.body.amount) : "50.00";
 
   const apiKey = process.env.PAYSUITE_API_KEY;
   if (!apiKey) {
@@ -41,7 +39,7 @@ module.exports = async (req, res) => {
     amount: String(amount),
     reference: String(reference),
     description: description || 'Premium Purchase',
-    return_url: return_url || 'https://pngcutter-gama.vercel.app/app.html'
+    return_url: return_url || 'https://pngcutter-gamma.vercel.app/app.html'
   });
 
   const options = {
