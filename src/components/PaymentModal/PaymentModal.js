@@ -79,7 +79,15 @@ class PaymentModal {
           })
         });
 
-        const result = await response.json();
+        const text = await response.text();
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch (e) {
+          console.error('Resposta da API não é JSON:', text);
+          throw new Error('A rota /api/create-payment não respondeu em formato JSON. Certifique-se de que as variáveis de ambiente PAYSUITE_API_KEY estão configuradas no painel Vercel.');
+        }
+
         if (result.status === 'success' && result.data && result.data.checkout_url) {
           localStorage.setItem('pending_payment_id', result.data.id);
           window.location.href = result.data.checkout_url;

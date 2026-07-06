@@ -654,7 +654,18 @@ function setupPaymentFlow() {
           })
         });
 
-        const result = await response.json();
+        const text = await response.text();
+        let result;
+        try {
+          result = JSON.parse(text);
+        } catch (e) {
+          console.error('Resposta da API não é JSON:', text);
+          alert('Erro ao ligar à API de pagamentos. Verifique se as variáveis de ambiente PAYSUITE_API_KEY foram adicionadas no painel da Vercel.');
+          proBtn.textContent = originalText;
+          proBtn.style.pointerEvents = 'auto';
+          return;
+        }
+
         if (result.status === 'success' && result.data && result.data.checkout_url) {
           // Guardar ID no localStorage como fallback de verificação
           localStorage.setItem('pending_payment_id', result.data.id);
