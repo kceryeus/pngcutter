@@ -14,6 +14,18 @@ class Topbar {
     };
     this.container = null;
     this.unsubscribe = null;
+    this.sidebar = null;
+    this.sidebarExpanded = false;
+  }
+
+  setSidebar(sidebar) {
+    this.sidebar = sidebar;
+    if (this.sidebar) {
+      this.sidebar.setStateChangeCallback((state) => {
+        this.sidebarExpanded = state.isExpanded;
+        this.updateMenuToggleIcon();
+      });
+    }
   }
 
   render() {
@@ -34,7 +46,6 @@ class Topbar {
       this.updateTranslations();
     });
     
-    // Subscribe to theme changes
     this.themeUnsubscribe = onThemeChange(() => {
       this.updateThemeIcon();
     });
@@ -43,6 +54,12 @@ class Topbar {
   renderContent() {
     this.container.innerHTML = `
       <div class="topbar-content">
+        <div class="topbar-left">
+          <button class="topbar-menu-toggle" aria-label="${i18n.t('topbar.openMenu')}" aria-expanded="false">
+            ${getIcon('menu')}
+          </button>
+          <span class="topbar-app-title">${i18n.t('topbar.appName')}</span>
+        </div>
         ${this.options.showSearch ? this.renderSearch() : ''}
         <div class="topbar-actions">
           <button class="topbar-theme-toggle" title="Alternar tema" aria-label="Alternar tema">
@@ -56,6 +73,19 @@ class Topbar {
       </div>
       ${this.renderUserDropdown()}
     `;
+  }
+
+  updateMenuToggleIcon() {
+    const menuBtn = this.container?.querySelector('.topbar-menu-toggle');
+    if (!menuBtn) return;
+
+    menuBtn.innerHTML = this.sidebarExpanded ? getIcon('close') : getIcon('menu');
+    menuBtn.setAttribute(
+      'aria-label',
+      i18n.t(this.sidebarExpanded ? 'topbar.closeMenu' : 'topbar.openMenu')
+    );
+    menuBtn.setAttribute('aria-expanded', String(this.sidebarExpanded));
+    menuBtn.classList.toggle('is-active', this.sidebarExpanded);
   }
 
   getThemeIcon() {
@@ -104,11 +134,19 @@ class Topbar {
   }
 
   attachEvents() {
+    const menuToggle = this.container.querySelector('.topbar-menu-toggle');
+    if (menuToggle) {
+      menuToggle.addEventListener('click', () => {
+        if (this.sidebar) {
+          this.sidebar.toggle();
+        }
+      });
+    }
+
     const themeToggle = this.container.querySelector('.topbar-theme-toggle');
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
         toggleDarkMode();
-        // Icon will update via theme change listener
       });
     }
 
@@ -153,6 +191,13 @@ class Topbar {
     if (searchInput) {
       searchInput.placeholder = i18n.t('topbar.search');
     }
+
+    const appTitle = this.container.querySelector('.topbar-app-title');
+    if (appTitle) {
+      appTitle.textContent = i18n.t('topbar.appName');
+    }
+
+    this.updateMenuToggleIcon();
 
     const dropdownItems = this.container.querySelectorAll('.topbar-dropdown-item');
     dropdownItems.forEach((item, index) => {
@@ -202,4 +247,3 @@ class Topbar {
 }
 
 export default Topbar;
-

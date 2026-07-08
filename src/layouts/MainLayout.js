@@ -30,6 +30,7 @@ class MainLayout {
     // Renderizar Topbar
     this.topbar = new Topbar('topbar-container', this.options.topbarOptions || {});
     this.topbar.render();
+    this.topbar.setSidebar(this.sidebar);
 
     // Renderizar ContentArea
     this.contentArea = new ContentArea('content-container', this.options.contentAreaOptions || {});

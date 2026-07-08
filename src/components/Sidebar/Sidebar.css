@@ -220,12 +220,95 @@
 @media (max-width: 768px) {
   .sidebar {
     width: 0;
+    box-shadow: var(--shadow-2xl);
+    transition: width var(--transition-base), transform var(--transition-base);
   }
   
   .sidebar.expanded,
   .sidebar.pinned {
-    width: 290px;
+    width: min(290px, 85vw);
   }
+
+  .sidebar-pin-btn {
+    display: none;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  .sidebar.expanded .sidebar-header,
+  .sidebar.pinned .sidebar-header {
+    justify-content: space-between;
+  }
+
+  .sidebar.expanded .sidebar-item-label,
+  .sidebar.pinned .sidebar-item-label,
+  .sidebar.expanded .sidebar-logo-text,
+  .sidebar.pinned .sidebar-logo-text,
+  .sidebar.expanded .sidebar-pro-badge,
+  .sidebar.pinned .sidebar-pro-badge {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .sidebar.expanded .sidebar-item,
+  .sidebar.pinned .sidebar-item {
+    justify-content: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .sidebar.expanded .sidebar-nav,
+  .sidebar.pinned .sidebar-nav {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+.sidebar-close-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.sidebar-close-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-sidebar-overlay);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+body.sidebar-mobile-open {
+  overflow: hidden;
 }
 
 .sidebar-pro-badge {

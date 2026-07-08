@@ -31,6 +31,53 @@ body.sidebar-pinned .topbar {
   gap: var(--spacing-md);
 }
 
+.topbar-left {
+  display: none;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-right: auto;
+  min-width: 0;
+}
+
+.topbar-menu-toggle {
+  display: none;
+  background: var(--color-primary-light);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-base);
+  color: var(--color-primary);
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.topbar-menu-toggle svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.topbar-menu-toggle:hover,
+.topbar-menu-toggle.is-active {
+  background: var(--color-primary);
+  color: var(--text-inverse);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-primary);
+}
+
+.topbar-app-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .topbar-search {
   position: relative;
   flex: 1;
@@ -243,6 +290,17 @@ body.sidebar-pinned .topbar {
   
   .topbar-content {
     padding: 0 var(--spacing-md);
+    justify-content: space-between;
+  }
+
+  .topbar-left {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .topbar-menu-toggle {
+    display: flex;
   }
   
   .topbar-search {
@@ -251,6 +309,18 @@ body.sidebar-pinned .topbar {
   
   .topbar-user-name {
     display: none;
+  }
+
+  .topbar-actions {
+    flex-shrink: 0;
+    gap: var(--spacing-sm);
+  }
+
+  .topbar-theme-toggle,
+  .topbar-help-btn {
+    width: 36px;
+    height: 36px;
+    padding: var(--spacing-xs);
   }
 }
 

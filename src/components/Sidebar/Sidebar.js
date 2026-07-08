@@ -2,6 +2,8 @@ import i18n from '../../i18n/i18n.js';
 import { getIcon } from '../../utils/icons.js';
 import premium from '../../utils/premium.js';
 
+const MOBILE_BREAKPOINT = 768;
+
 class Sidebar {
   constructor(containerId, items = []) {
     this.containerId = containerId;
@@ -9,7 +11,12 @@ class Sidebar {
     this.isPinned = false;
     this.isExpanded = false;
     this.container = null;
+    this.overlay = null;
     this.unsubscribe = null;
+    this.mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    this.onStateChange = null;
+    this.handleMediaChange = this.handleMediaChange.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
   }
 
   render() {
@@ -32,6 +39,9 @@ class Sidebar {
           <button class="sidebar-pin-btn" title="Fixar sidebar" aria-label="Fixar sidebar">
             ${getIcon('pin')}
           </button>
+          <button class="sidebar-close-btn" aria-label="${i18n.t('topbar.closeMenu')}">
+            ${getIcon('close')}
+          </button>
         </div>
         <nav class="sidebar-nav">
           ${this.items.map(item => this.renderItem(item)).join('')}
@@ -39,18 +49,54 @@ class Sidebar {
       </div>
     `;
 
+    this.ensureOverlay();
     this.attachEvents();
     this.updateTranslations();
+    this.mediaQuery.addEventListener('change', this.handleMediaChange);
     
     this.unsubscribe = i18n.subscribe(() => {
       this.updateTranslations();
     });
   }
 
+  ensureOverlay() {
+    if (this.overlay) return;
+
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'sidebar-overlay';
+    this.overlay.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(this.overlay);
+    this.overlay.addEventListener('click', () => this.collapse());
+  }
+
+  isMobileView() {
+    return this.mediaQuery.matches;
+  }
+
+  handleMediaChange() {
+    if (!this.isMobileView()) {
+      document.body.classList.remove('sidebar-mobile-open');
+      this.overlay?.classList.remove('visible');
+      if (!this.isPinned) {
+        this.isExpanded = false;
+        this.container?.classList.remove('expanded');
+      }
+    } else if (this.isExpanded) {
+      document.body.classList.add('sidebar-mobile-open');
+      this.overlay?.classList.add('visible');
+    }
+    this.notifyStateChange();
+  }
+
+  handleKeydown(event) {
+    if (event.key === 'Escape' && this.isMobileView() && this.isExpanded) {
+      this.collapse();
+    }
+  }
+
   renderItem(item) {
     const currentHash = window.location.hash || '#/';
     const isActive = currentHash === item.href || (item.href === '#/' && currentHash === '#/');
-    // Mapear ícones comuns
     let iconSvg = item.icon;
     if (typeof item.icon === 'string' && !item.icon.startsWith('<svg')) {
       const iconMap = {
@@ -81,17 +127,32 @@ class Sidebar {
       pinBtn.addEventListener('click', () => this.togglePin());
     }
 
+    const closeBtn = this.container.querySelector('.sidebar-close-btn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.collapse());
+    }
+
     this.container.addEventListener('mouseenter', () => {
-      if (!this.isPinned) {
+      if (!this.isPinned && !this.isMobileView()) {
         this.expand();
       }
     });
 
     this.container.addEventListener('mouseleave', () => {
-      if (!this.isPinned) {
+      if (!this.isPinned && !this.isMobileView()) {
         this.collapse();
       }
     });
+
+    this.container.querySelectorAll('.sidebar-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (this.isMobileView()) {
+          this.collapse();
+        }
+      });
+    });
+
+    document.addEventListener('keydown', this.handleKeydown);
   }
 
   updateTranslations() {
@@ -105,16 +166,37 @@ class Sidebar {
         }
       }
     });
+
+    const closeBtn = this.container.querySelector('.sidebar-close-btn');
+    if (closeBtn) {
+      closeBtn.setAttribute('aria-label', i18n.t('topbar.closeMenu'));
+    }
   }
 
   expand() {
     this.isExpanded = true;
     this.container.classList.add('expanded');
+
+    if (this.isMobileView()) {
+      document.body.classList.add('sidebar-mobile-open');
+      this.overlay?.classList.add('visible');
+      this.overlay?.setAttribute('aria-hidden', 'false');
+    }
+
+    this.notifyStateChange();
   }
 
   collapse() {
     this.isExpanded = false;
     this.container.classList.remove('expanded');
+
+    if (this.isMobileView()) {
+      document.body.classList.remove('sidebar-mobile-open');
+      this.overlay?.classList.remove('visible');
+      this.overlay?.setAttribute('aria-hidden', 'true');
+    }
+
+    this.notifyStateChange();
   }
 
   toggle() {
@@ -126,6 +208,8 @@ class Sidebar {
   }
 
   pin() {
+    if (this.isMobileView()) return;
+
     this.isPinned = true;
     this.container.classList.add('pinned');
     document.body.classList.add('sidebar-pinned');
@@ -154,12 +238,16 @@ class Sidebar {
   }
 
   setStateChangeCallback(callback) {
-    this.stateChangeCallback = callback;
+    this.onStateChange = callback;
   }
 
   notifyStateChange() {
-    if (this.stateChangeCallback) {
-      this.stateChangeCallback(this.isPinned);
+    if (this.onStateChange) {
+      this.onStateChange({
+        isExpanded: this.isExpanded,
+        isPinned: this.isPinned,
+        isMobile: this.isMobileView()
+      });
     }
   }
 
@@ -195,6 +283,13 @@ class Sidebar {
     if (this.unsubscribe) {
       this.unsubscribe();
     }
+    this.mediaQuery.removeEventListener('change', this.handleMediaChange);
+    document.removeEventListener('keydown', this.handleKeydown);
+    document.body.classList.remove('sidebar-mobile-open');
+    if (this.overlay) {
+      this.overlay.remove();
+      this.overlay = null;
+    }
     if (this.container) {
       this.container.innerHTML = '';
       this.container.className = '';
@@ -203,4 +298,3 @@ class Sidebar {
 }
 
 export default Sidebar;
-

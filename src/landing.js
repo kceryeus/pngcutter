@@ -63,7 +63,9 @@ const translations = {
       features: 'Funcionalidades',
       howItWorks: 'Como Funciona',
       pricing: 'Preços',
-      getStarted: 'Começar Agora'
+      getStarted: 'Começar Agora',
+      openMenu: 'Abrir menu',
+      closeMenu: 'Fechar menu'
     },
     pricing: {
       title: 'Planos e Preços',
@@ -168,7 +170,9 @@ const translations = {
       features: 'Features',
       howItWorks: 'How It Works',
       pricing: 'Pricing',
-      getStarted: 'Get Started'
+      getStarted: 'Get Started',
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu'
     },
     pricing: {
       title: 'Plans & Pricing',
@@ -268,7 +272,7 @@ function renderLanding() {
           <img src="src/assets/logo.png" alt="PNG Cutter – Format Convert & Resize" style="width: 32px; height: 32px; object-fit: contain;">
           <span>PNG Cutter</span>
         </a>
-        <div class="landing-nav-links">
+        <div class="landing-nav-links landing-nav-desktop">
           <a href="#home">${t('topbar.home')}</a>
           <a href="#features" class="nav-link">${t('topbar.features')}</a>
           <a href="#how-it-works" class="nav-link">${t('topbar.howItWorks')}</a>
@@ -279,8 +283,25 @@ function renderLanding() {
           </div>
           <a href="app.html" class="nav-link nav-cta">${t('topbar.getStarted')}</a>
         </div>
+        <div class="landing-topbar-mobile">
+          <div class="language-selector landing-lang-compact">
+            <button class="lang-btn ${lang === 'pt' ? 'active' : ''}" data-lang="pt" aria-label="Português">PT</button>
+            <button class="lang-btn ${lang === 'en' ? 'active' : ''}" data-lang="en" aria-label="English">EN</button>
+          </div>
+          <button class="landing-menu-toggle" aria-label="${t('topbar.openMenu')}" aria-expanded="false">
+            ${getIcon('menu')}
+          </button>
+        </div>
+      </div>
+      <div class="landing-mobile-nav" aria-hidden="true">
+        <a href="#home" class="landing-mobile-nav-link">${t('topbar.home')}</a>
+        <a href="#features" class="landing-mobile-nav-link">${t('topbar.features')}</a>
+        <a href="#how-it-works" class="landing-mobile-nav-link">${t('topbar.howItWorks')}</a>
+        <a href="#pricing" class="landing-mobile-nav-link">${t('topbar.pricing')}</a>
+        <a href="app.html" class="landing-mobile-nav-link landing-mobile-nav-cta">${t('topbar.getStarted')}</a>
       </div>
     </nav>
+    <div class="landing-nav-overlay" aria-hidden="true"></div>
     
     <div class="landing-page">
       <div class="landing-hero" id="home">
@@ -461,6 +482,9 @@ function renderLanding() {
   // Adicionar eventos de troca de idioma
   attachLanguageSwitcher();
 
+  // Menu mobile
+  attachMobileMenu();
+
   // Adicionar eventos dos modais de Termos e Privacidade
   attachLegalModals();
 
@@ -521,6 +545,65 @@ function attachLanguageSwitcher() {
       const newLang = btn.getAttribute('data-lang');
       setLanguage(newLang);
     });
+  });
+}
+
+function attachMobileMenu() {
+  const menuToggle = document.querySelector('.landing-menu-toggle');
+  const mobileNav = document.querySelector('.landing-mobile-nav');
+  const overlay = document.querySelector('.landing-nav-overlay');
+  if (!menuToggle || !mobileNav || !overlay) return;
+
+  let isOpen = false;
+  const openLabel = getTranslation('topbar.openMenu', currentLanguage);
+  const closeLabel = getTranslation('topbar.closeMenu', currentLanguage);
+
+  const closeMenu = () => {
+    isOpen = false;
+    menuToggle.innerHTML = getIcon('menu');
+    menuToggle.setAttribute('aria-label', openLabel);
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.classList.remove('is-active');
+    mobileNav.classList.remove('open');
+    mobileNav.setAttribute('aria-hidden', 'true');
+    overlay.classList.remove('visible');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('landing-nav-open');
+  };
+
+  const openMenu = () => {
+    isOpen = true;
+    menuToggle.innerHTML = getIcon('close');
+    menuToggle.setAttribute('aria-label', closeLabel);
+    menuToggle.setAttribute('aria-expanded', 'true');
+    menuToggle.classList.add('is-active');
+    mobileNav.classList.add('open');
+    mobileNav.setAttribute('aria-hidden', 'false');
+    overlay.classList.add('visible');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('landing-nav-open');
+  };
+
+  menuToggle.addEventListener('click', () => {
+    if (isOpen) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  overlay.addEventListener('click', closeMenu);
+
+  mobileNav.querySelectorAll('.landing-mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen) {
+      closeMenu();
+    }
   });
 }
 
