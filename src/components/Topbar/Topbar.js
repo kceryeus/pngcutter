@@ -109,13 +109,10 @@ class Topbar {
   }
 
   renderUserMenu() {
-    const isPremium = window.Clerk && window.Clerk.user && window.Clerk.user.publicMetadata && window.Clerk.user.publicMetadata.isPremium;
-    
     return `
       <div class="topbar-user" id="clerk-user-button">
         <!-- Clerk UserButton will be mounted here -->
       </div>
-      ${isPremium ? '<div class="topbar-pro-badge">PRO</div>' : ''}
     `;
   }
 

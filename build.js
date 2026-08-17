@@ -18,8 +18,7 @@ const filesToCopy = [
   'index.html',
   'app.html',
   'logo.png',
-  'src',
-  'api'
+  'src'
 ];
 
 filesToCopy.forEach(file => {

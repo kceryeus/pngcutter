@@ -1,8 +1,6 @@
 import i18n from '../../i18n/i18n.js';
 import Modal from '../../components/Modal/Modal.js';
-import PaymentModal from '../../components/PaymentModal/PaymentModal.js';
 import { getIcon } from '../../utils/icons.js';
-import premium from '../../utils/premium.js';
 
 // Importações dinâmicas para bibliotecas externas
 let removeBackgroundLib = null;
@@ -12,19 +10,14 @@ let fabric = null;
 // Carregar bibliotecas dinamicamente
 async function loadLibraries() {
   try {
-    // Always load background removal library (core feature)
     const bgRemoval = await import('@imgly/background-removal');
     removeBackgroundLib = bgRemoval.removeBackground;
-    
-    if (premium.hasFeature('colorPalettes')) {
-      const colorjs = await import('colorjs.io');
-      Color = colorjs.default || colorjs.Color;
-    }
-    
-    if (premium.hasFeature('manualRefinement')) {
-      fabric = await import('fabric');
-      fabric = fabric.fabric || fabric.default;
-    }
+
+    const colorjs = await import('colorjs.io');
+    Color = colorjs.default || colorjs.Color;
+
+    fabric = await import('fabric');
+    fabric = fabric.fabric || fabric.default;
   } catch (error) {
     console.warn('Some libraries could not be loaded:', error);
   }
@@ -53,8 +46,6 @@ class BackgroundRemover {
   render(contentArea) {
     const container = document.createElement('div');
     container.className = 'background-remover';
-    
-    const isPremium = premium.checkPremium();
     
     container.innerHTML = `
       <div class="background-remover-header">
@@ -114,15 +105,14 @@ class BackgroundRemover {
                 <button class="mode-btn ${this.currentMode === 'basic' ? 'active' : ''}" data-mode="basic">
                   ${i18n.t('backgroundRemover.mode.basic')}
                 </button>
-                <button class="mode-btn ${this.currentMode === 'advanced' ? 'active' : ''}" data-mode="advanced" ${!isPremium ? 'disabled' : ''}>
+                <button class="mode-btn ${this.currentMode === 'advanced' ? 'active' : ''}" data-mode="advanced">
                   ${i18n.t('backgroundRemover.mode.advanced')}
-                  ${!isPremium ? getIcon('premium') : ''}
                 </button>
               </div>
             </div>
             
-            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="refine-controls">
-              <label>${i18n.t('backgroundRemover.refine')} ${!isPremium ? getIcon('premium') : ''}</label>
+            <div class="control-group" id="refine-controls">
+              <label>${i18n.t('backgroundRemover.refine')}</label>
               <div class="refine-controls">
                 <button class="refine-btn ${this.brushMode === 'add' ? 'active' : ''}" data-mode="add">
                   ${getIcon('plus')} ${i18n.t('backgroundRemover.refine.add')}
@@ -135,8 +125,8 @@ class BackgroundRemover {
               </div>
             </div>
             
-            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="color-controls">
-              <label>${i18n.t('backgroundRemover.colors')} ${!isPremium ? getIcon('premium') : ''}</label>
+            <div class="control-group" id="color-controls">
+              <label>${i18n.t('backgroundRemover.colors')}</label>
               <div class="color-controls">
                 <div class="color-adjustments">
                   <div class="adjustment-item">
@@ -166,8 +156,8 @@ class BackgroundRemover {
               </div>
             </div>
             
-            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="filter-controls">
-              <label>${i18n.t('backgroundRemover.filters')} ${!isPremium ? getIcon('premium') : ''}</label>
+            <div class="control-group" id="filter-controls">
+              <label>${i18n.t('backgroundRemover.filters')}</label>
               <select id="filter-select" class="filter-select">
                 <option value="none">${i18n.t('backgroundRemover.filters.none')}</option>
                 <option value="vintage">${i18n.t('backgroundRemover.filters.vintage')}</option>
@@ -178,8 +168,8 @@ class BackgroundRemover {
               </select>
             </div>
             
-            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="background-controls">
-              <label>${i18n.t('backgroundRemover.background')} ${!isPremium ? getIcon('premium') : ''}</label>
+            <div class="control-group" id="background-controls">
+              <label>${i18n.t('backgroundRemover.background')}</label>
               <div class="background-controls">
                 <select id="background-type" class="background-select">
                   <option value="none">${i18n.t('backgroundRemover.background.none')}</option>
@@ -192,12 +182,12 @@ class BackgroundRemover {
               </div>
             </div>
             
-            <div class="control-group ${!isPremium ? 'premium-locked' : ''}" id="export-controls">
+            <div class="control-group" id="export-controls">
               <label>${i18n.t('backgroundRemover.export')}</label>
               <select id="export-format" class="export-select">
                 <option value="png">${i18n.t('backgroundRemover.export.png')}</option>
-                <option value="jpg" ${!isPremium ? 'disabled' : ''}>${i18n.t('backgroundRemover.export.jpg')} ${!isPremium ? 'PRO' : ''}</option>
-                <option value="webp" ${!isPremium ? 'disabled' : ''}>${i18n.t('backgroundRemover.export.webp')} ${!isPremium ? 'PRO' : ''}</option>
+                <option value="jpg">${i18n.t('backgroundRemover.export.jpg')}</option>
+                <option value="webp">${i18n.t('backgroundRemover.export.webp')}</option>
               </select>
             </div>
           </div>
@@ -232,11 +222,7 @@ class BackgroundRemover {
     const backgroundImage = document.getElementById('background-image');
     const exportFormat = document.getElementById('export-format');
     const applyPalette = document.getElementById('apply-palette');
-    
-    // Verificar se elementos existem antes de usar
-    const isPremium = premium.checkPremium();
 
-    // Upload
     if (uploadBtn) {
       uploadBtn.addEventListener('click', () => fileInput?.click());
     }
@@ -263,40 +249,16 @@ class BackgroundRemover {
       });
     }
 
-    // Download
     if (downloadBtn) {
       downloadBtn.addEventListener('click', () => this.downloadImage());
     }
 
-    // Reset
     if (resetBtn) {
       resetBtn.addEventListener('click', () => this.reset());
     }
 
-    const handlePremiumClick = (e) => {
-      const target = e.target;
-      if (target.closest('.premium-locked') || target.disabled || target.classList.contains('mode-btn') && target.dataset.mode === 'advanced' && !isPremium) {
-        e.preventDefault();
-        e.stopPropagation();
-        const paymentModal = new PaymentModal();
-        paymentModal.show(() => {
-          if (window.Clerk && window.Clerk.user) {
-            if (!window.Clerk.user.publicMetadata) window.Clerk.user.publicMetadata = {};
-            window.Clerk.user.publicMetadata.isPremium = true;
-            premium.setPremium(true);
-            window.location.reload();
-          }
-        });
-        return true;
-      }
-      return false;
-    };
-
-    // Mode selection
     modeBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        if (handlePremiumClick({ target: btn, preventDefault: () => e.preventDefault(), stopPropagation: () => e.stopPropagation() })) return;
-        
+      btn.addEventListener('click', () => {
         this.currentMode = btn.dataset.mode;
         modeBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -306,18 +268,7 @@ class BackgroundRemover {
       });
     });
 
-    // Add listener to locked sections
-    if (!isPremium) {
-      document.querySelectorAll('.premium-locked').forEach(el => {
-        el.addEventListener('click', handlePremiumClick, true);
-      });
-      if (exportFormat) {
-        exportFormat.addEventListener('mousedown', handlePremiumClick, true);
-      }
-    }
-
-    // Refine controls (Premium)
-    if (isPremium && refineBtns && refineBtns.length > 0) {
+    if (refineBtns && refineBtns.length > 0) {
       refineBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           this.brushMode = btn.dataset.mode;
@@ -328,7 +279,7 @@ class BackgroundRemover {
       });
     }
 
-    if (isPremium && brushSize) {
+    if (brushSize) {
       brushSize.addEventListener('input', (e) => {
         this.brushSize = parseInt(e.target.value, 10);
         const label = document.querySelector('.brush-size-label');
@@ -339,48 +290,45 @@ class BackgroundRemover {
       });
     }
 
-    // Color adjustments (Premium)
-    if (isPremium && brightness) {
+    if (brightness) {
       brightness.addEventListener('input', (e) => {
         this.colorAdjustments.brightness = parseInt(e.target.value);
         this.applyColorAdjustments();
       });
     }
-    if (isPremium && contrast) {
+    if (contrast) {
       contrast.addEventListener('input', (e) => {
         this.colorAdjustments.contrast = parseInt(e.target.value);
         this.applyColorAdjustments();
       });
     }
-    if (isPremium && saturation) {
+    if (saturation) {
       saturation.addEventListener('input', (e) => {
         this.colorAdjustments.saturation = parseInt(e.target.value);
         this.applyColorAdjustments();
       });
     }
 
-    // Filters (Premium)
-    if (isPremium && filterSelect) {
+    if (filterSelect) {
       filterSelect.addEventListener('change', (e) => {
         this.currentFilter = e.target.value;
         this.applyFilter();
       });
     }
 
-    // Background (Premium)
-    if (isPremium && backgroundType) {
+    if (backgroundType) {
       backgroundType.addEventListener('change', (e) => {
         const type = e.target.value;
         if (type === 'color' && backgroundColor) {
           backgroundColor.style.display = 'block';
-          backgroundColor.addEventListener('change', (e) => {
-            this.customBackground = { type: 'color', value: e.target.value };
+          backgroundColor.addEventListener('change', (ev) => {
+            this.customBackground = { type: 'color', value: ev.target.value };
             this.applyBackground();
           });
         } else if (type === 'image' && backgroundImage) {
           backgroundImage.style.display = 'block';
-          backgroundImage.addEventListener('change', (e) => {
-            const file = e.target.files[0];
+          backgroundImage.addEventListener('change', (ev) => {
+            const file = ev.target.files[0];
             if (file) {
               const reader = new FileReader();
               reader.onload = (event) => {
@@ -400,15 +348,13 @@ class BackgroundRemover {
       });
     }
 
-    // Export format
     if (exportFormat) {
       exportFormat.addEventListener('change', (e) => {
         this.exportFormat = e.target.value;
       });
     }
 
-    // Palette (Premium)
-    if (isPremium && applyPalette) {
+    if (applyPalette) {
       applyPalette.addEventListener('click', () => {
         const paletteSelect = document.getElementById('palette-select');
         if (paletteSelect) {
@@ -486,7 +432,7 @@ class BackgroundRemover {
       const canvas = document.getElementById('processed-canvas');
       if (!canvas || !this.originalImage) return;
 
-      if (this.currentMode === 'advanced' && premium.hasFeature('advancedRemoval') && removeBackgroundLib) {
+      if (this.currentMode === 'advanced' && removeBackgroundLib) {
         // Usar biblioteca avançada
         await this.processAdvanced();
       } else {
@@ -704,7 +650,7 @@ class BackgroundRemover {
   }
 
   setupRefinement() {
-    if (!premium.hasFeature('manualRefinement') || !fabric) return;
+    if (!fabric) return;
     if (!this.committedImageData || !this.processedImage) return;
 
     const canvas = document.getElementById('processed-canvas');

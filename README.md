@@ -1,163 +1,120 @@
-# 🎨 PNG Cutter - Remover Background de Imagens
+# 🎨 PNG Cutter – Format Convert & Resize
 
-Uma ferramenta web gratuita para remover backgrounds de imagens e converter para PNG transparente, construída com o framework MOZ-CHOP.
+Uma ferramenta web moderna, completa e **100% gratuita** para conversão de formatos de imagens, redimensionamento em lote e remoção automática de backgrounds com inteligência artificial, construída com o framework MOZ-CHOP.
 
 ## 🚀 Funcionalidades
 
-### ✨ Versão Gratuita
-- ✂️ **Remoção Automática de Background** - Remove o background de imagens automaticamente usando algoritmo baseado em análise de cores
-- 📥 **Download em PNG** - Descarrega a imagem processada em formato PNG com transparência
-- 🎨 **Interface Moderna** - Design limpo e intuitivo
-- 🌓 **Dark/Light Mode** - Suporte completo a temas claro e escuro
-- 🌐 **Multi-idioma** - Suporte a Português e Inglês
-- 📱 **Responsivo** - Funciona perfeitamente em dispositivos móveis
-- 🎯 **Drag & Drop** - Arraste e solte imagens para processar
+- ✂️ **Remoção de Background com IA & Algoritmo Local** - Remove o background de imagens automaticamente usando IA local (`@imgly/background-removal`) ou algoritmo rápido de cores
+- 🔄 **Conversor de Formatos** - Conversão instantânea entre formatos JPG, PNG e WEBP com preservação de qualidade
+- 📦 **Redimensionamento em Lote (Bulk Resizer)** - Processe múltiplas imagens em simultâneo com download em arquivo ZIP
+- 🖌️ **Refinamento Manual** - Pincel de precisão para adicionar ou remover áreas manualmente (Fabric.js)
+- 🎨 **Paletas de Cores & Ajustes** - Controles finos de brilho, contraste, saturação e temas de cor (Color.js)
+- 🎭 **Filtros Visuais & Fundos Personalizados** - Cores sólidas, gradientes e fundos customizados
+- 📥 **Exportação Rápida** - Download de ficheiros individuais ou em pacotes compactados
+- 🎨 **Design Moderno & Vibe Coding** - Interface limpa com suporte completo a Dark/Light Mode
+- 🌐 **Multi-idioma** - Suporte completo a Português e Inglês
+- 📱 **Totalmente Responsivo** - Funciona perfeitamente em desktop, tablets e smartphones
+- 🔒 **100% Privado e Client-Side** - As suas imagens nunca saem do seu navegador. Todo o processamento é local!
 
-### ⭐ Funcionalidades Premium
-- 🤖 **Remoção Avançada com IA** - Usa `@imgly/background-removal` para resultados muito mais precisos
-- 🖌️ **Refinamento Manual** - Pincel para adicionar ou remover áreas manualmente (usando Fabric.js)
-- 🎨 **Sistema de Paletas de Cores** - Aplique paletas predefinidas ou personalizadas (usando Color.js)
-- 🎛️ **Ajustes de Cores** - Controles de brilho, contraste e saturação
-- 🎭 **Filtros Visuais** - Vintage, Preto & Branco, Sépia, Frio, Quente
-- 🖼️ **Backgrounds Personalizados** - Adicione cores sólidas, gradientes ou imagens como background
-- 📤 **Múltiplos Formatos de Exportação** - PNG, JPG e WEBP
+## 📋 Requisitos & Instalação
 
-## 📋 Requisitos
+### Instalação Rápida
 
-### Básico
-- Navegador moderno com suporte a ES6 modules
-- Nenhuma dependência externa necessária para funcionalidades básicas
+1. Clone ou descarregue o repositório:
+   ```bash
+   git clone <repo-url>
+   cd pngcutter
+   ```
 
-### Premium (Opcional)
-Para usar as funcionalidades premium, instale as dependências:
-
-```bash
-npm install
-```
-
-Isso instalará:
-- `@imgly/background-removal` - Remoção avançada de background com IA
-- `colorjs.io` - Manipulação de cores e paletas
-- `fabric` - Editor de canvas interativo para refinamento manual
-
-**Nota:** As funcionalidades premium são carregadas dinamicamente. Se as bibliotecas não estiverem instaladas, apenas as funcionalidades básicas estarão disponíveis.
-
-## 🛠️ Como Usar
-
-### Instalação
-
-1. Clone ou baixe o repositório
-2. (Opcional) Para funcionalidades premium, execute:
+2. Instale as dependências:
    ```bash
    npm install
    ```
 
-### Uso Básico
+3. Inicie o servidor local:
+   ```bash
+   npm start
+   ```
+   Aceda a `http://localhost:8000` no seu navegador.
 
-1. Abra o ficheiro `index.html` no seu navegador (ou use `npm start` para servidor local)
-2. Clique em "Carregar Imagem" ou arraste uma imagem para a área de upload
-3. Aguarde o processamento automático
-4. Descarregue a imagem em PNG sem background
+## 🛠️ Como Usar
 
-### Funcionalidades Premium
+### 1. Remoção de Background
+1. Aceda à aplicação (`app.html`) e selecione **Remover Background**.
+2. Arraste e solte uma imagem ou clique em **Carregar Imagem**.
+3. O background será removido instantaneamente. Pode refinar com o pincel manual ou aplicar filtros e fundos personalizados.
+4. Clique em **Descarregar PNG**.
 
-1. **Modo Avançado**: Selecione "Avançado (Premium)" para usar IA na remoção de background
-2. **Refinamento Manual**: Use os botões "Adicionar Área" ou "Remover Área" e ajuste o tamanho do pincel
-3. **Ajustes de Cores**: Use os sliders para ajustar brilho, contraste e saturação
-4. **Paletas**: Selecione uma paleta e clique em "Aplicar Paleta"
-5. **Filtros**: Escolha um filtro visual no dropdown
-6. **Backgrounds**: Selecione tipo de background (cor, gradiente ou imagem)
-7. **Exportação**: Escolha o formato de exportação (PNG, JPG ou WEBP)
+### 2. Redimensionamento em Lote
+1. Selecione **Redimensionar Lote** na barra de navegação.
+2. Carregue múltiplas imagens ao mesmo tempo.
+3. Defina as dimensões desejadas e descarregue todas num ficheiro ZIP pronto.
+
+### 3. Conversor de Formatos
+1. Selecione **Converter Formato**.
+2. Escolha o formato de saída pretendido (PNG, JPG, WEBP).
+3. Converta com rapidez mantendo máxima nitidez.
 
 ## 📁 Estrutura do Projeto
 
 ```
 pngcutter/
-├── index.html                          # Ficheiro HTML principal
-├── package.json                        # Dependências do projeto
-├── server.js                          # Servidor local (opcional)
+├── index.html                          # Landing Page
+├── app.html                            # Aplicação Principal
+├── package.json                        # Configuração e Dependências
+├── build.js                            # Script de build para produção
+├── local-server.js                     # Servidor local de desenvolvimento
 ├── src/
-│   ├── index.js                       # Inicialização do framework
-│   ├── landing.js                    # Página de landing
-│   ├── components/                    # Componentes reutilizáveis
-│   │   ├── Sidebar/                   # Menu lateral
-│   │   ├── Topbar/                    # Barra superior
-│   │   ├── Modal/                     # Caixas de diálogo
-│   │   └── ContentArea/               # Área de conteúdo
+│   ├── index.js                       # Inicialização da App
+│   ├── landing.js                     # Lógica da Landing Page
+│   ├── components/                    # Componentes modulares
+│   │   ├── ContentArea/               # Área de conteúdo
+│   │   ├── Modal/                     # Caixas de diálogo modais
+│   │   ├── Sidebar/                   # Menu lateral responsivo
+│   │   └── Topbar/                    # Barra superior
 │   ├── layouts/
-│   │   └── MainLayout.js              # Layout principal
+│   │   └── MainLayout.js              # Layout base da aplicação
 │   ├── pages/
-│   │   ├── BackgroundRemover/         # Página de remoção de background
-│   │   │   ├── BackgroundRemover.js  # Lógica principal
-│   │   │   └── BackgroundRemover.css # Estilos
-│   │   └── Landing/                   # Página inicial
-│   ├── utils/                         # Utilitários
-│   │   ├── premium.js                 # Sistema de verificação premium
-│   │   ├── icons.js                   # Ícones SVG
+│   │   ├── BackgroundRemover/         # Remoção de Background & Edição
+│   │   ├── BulkResizer/               # Redimensionador em Lote
+│   │   ├── FormatConverter/           # Conversor de Formatos
+│   │   └── Landing/                   # Página Inicial
+│   ├── utils/                         # Utilitários e Helpers
 │   │   ├── dateUtils.js
+│   │   ├── icons.js                   # Ícones SVG minimalistas
+│   │   ├── legalTexts.js              # Termos de Uso e Privacidade
 │   │   ├── stringUtils.js
 │   │   └── themeUtils.js
-│   ├── themes/                        # Sistema de temas
+│   ├── themes/                        # Sistema de temas (Dark/Light)
 │   │   ├── base.css
 │   │   └── themeManager.js
-│   └── i18n/                          # Traduções
+│   └── i18n/                          # Dicionários de Tradução (PT/EN)
 │       ├── i18n.js
 │       ├── pt.json
 │       └── en.json
 └── README.md
 ```
 
-## 🎯 Formatos Suportados
-
-- JPEG/JPG
-- PNG
-- WEBP
-
-## ⚙️ Limitações
-
-- Tamanho máximo: 10MB
-- O algoritmo básico funciona melhor com imagens que têm backgrounds claros ou uniformes
-- Para melhores resultados, use imagens com bom contraste entre o objeto e o background
-- Funcionalidades premium requerem instalação de dependências
-
 ## 🔧 Tecnologias Utilizadas
 
-### Core
-- **HTML5** - Estrutura
-- **CSS3** - Estilização com variáveis CSS e dark mode
-- **JavaScript ES6+** - Lógica da aplicação
-- **Canvas API** - Processamento de imagens
+- **HTML5 & CSS3** - Variáveis CSS, layout moderno, glassmorphism e dark mode
+- **JavaScript ES6+** - Arquitetura modular orientada a componentes
+- **Canvas API** - Processamento e manipulação de imagem em alta velocidade
+- **@imgly/background-removal** - Remoção avançada de fundo por inteligência artificial
+- **colorjs.io** - Análise e manipulação cromática
+- **fabric.js** - Editor de canvas interativo para desenho e máscaras
+- **jszip** - Compactação e descarregamento de múltiplos ficheiros em lote
 
-### Premium (Opcional)
-- **@imgly/background-removal** - Remoção de background com IA/ML
-- **colorjs.io** - Manipulação avançada de cores
-- **fabric.js** - Editor de canvas interativo
+## 🔒 Privacidade e Segurança
 
-## 📝 Notas
-
-- A ferramenta processa tudo no navegador (client-side)
-- Nenhuma imagem é enviada para servidores externos
-- Todas as operações são realizadas localmente no seu dispositivo
-- Funcionalidades premium são carregadas dinamicamente (lazy loading)
-- Sistema premium pode ser facilmente integrado com sistema de pagamento
-
-## 🎨 Framework MOZ-CHOP
-
-Este projeto utiliza o framework MOZ-CHOP, um framework modular e reutilizável para aplicações web com foco em componentes, utilitários e suporte completo a dark/light mode.
-
-## 🔐 Sistema Premium
-
-O sistema premium está implementado com uma flag simples em `src/utils/premium.js`. Por padrão, está ativado para demonstração. Em produção, você pode:
-
-1. Integrar com sistema de autenticação
-2. Conectar com gateway de pagamento
-3. Verificar assinaturas via API
-4. Gerenciar limites de uso
+- **100% Client-Side**: Nenhuma imagem é transmitida para servidores externos.
+- **Zero Rastreamento de Ficheiros**: Os seus ficheiros permanecem no seu computador ou telemóvel.
+- **Gratuito e Sem Custos**: Acesso ilimitado a todas as funcionalidades sem cobranças nem planos pagos.
 
 ## 📄 Licença
 
-Este projeto é gratuito e de código aberto.
+Distribuído sob licença MIT. Livre para uso pessoal e comercial.
 
 ---
 
-**Desenvolvido com ❤️ para remover backgrounds de imagens de forma fácil e gratuita**
+**PNG Cutter – Desenvolvido com foco em velocidade, precisão e privacidade.**

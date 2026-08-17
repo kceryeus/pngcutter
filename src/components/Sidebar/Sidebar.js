@@ -1,6 +1,5 @@
 import i18n from '../../i18n/i18n.js';
 import { getIcon } from '../../utils/icons.js';
-import premium from '../../utils/premium.js';
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -109,14 +108,10 @@ class Sidebar {
       iconSvg = getIcon(iconName);
     }
     
-    const isPremium = premium.checkPremium();
-    const showProBadge = item.isPro && !isPremium;
-
     return `
-      <a href="${item.href}" class="sidebar-item ${isActive ? 'active' : ''} ${showProBadge ? 'is-pro-locked' : ''}" data-id="${item.id}">
+      <a href="${item.href}" class="sidebar-item ${isActive ? 'active' : ''}" data-id="${item.id}">
         <span class="sidebar-item-icon">${iconSvg || getIcon('dashboard')}</span>
         <span class="sidebar-item-label">${i18n.t(item.label)}</span>
-        ${showProBadge ? `<span class="sidebar-pro-badge">${getIcon('premium')} PRO</span>` : ''}
       </a>
     `;
   }

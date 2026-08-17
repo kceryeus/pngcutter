@@ -161,7 +161,7 @@ export const icons = {
     <path d="M3 10H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </svg>`,
   
-  premium: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+  star: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M10 2L12 8L18 9L13 13L14 19L10 16L6 19L7 13L2 9L8 8L10 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="currentColor" fill-opacity="0.1"/>
   </svg>`,
 

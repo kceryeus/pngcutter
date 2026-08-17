@@ -18,7 +18,7 @@ export const legalTexts = {
         <p>O utilizador retém <strong>100% da propriedade intelectual e direitos de autor</strong> sobre todas as imagens carregadas e processadas. O PNG Cutter <strong>não utiliza</strong>, sob qualquer circunstância, as suas imagens para treino de modelos de Inteligência Artificial (IA), análise de dados ou para quaisquer fins comerciais.</p>
         
         <h4>4. Contas de Utilizador e Autenticação</h4>
-        <p>Utilizamos o serviço <strong>Clerk</strong> para gestão segura de autenticação. Os dados recolhidos (como e-mail e nome) destinam-se exclusivamente à gestão do seu perfil e plano de subscrição. Não existe qualquer associação entre a sua conta e os ficheiros processados localmente.</p>
+        <p>Utilizamos o serviço <strong>Clerk</strong> para gestão segura de autenticação. Os dados recolhidos (como e-mail e nome) destinam-se exclusivamente à gestão do seu perfil e acesso à plataforma. Não existe qualquer associação entre a sua conta e os ficheiros processados localmente.</p>
         
         <h4>5. Isenção de Garantias e Limitação de Responsabilidade</h4>
         <p>O Serviço é fornecido "como está" e "conforme disponível". O PNG Cutter não se responsabiliza por eventuais perdas acidentais de dados no navegador ou pelo uso indevido ou ilegal de imagens por parte dos utilizadores.</p>

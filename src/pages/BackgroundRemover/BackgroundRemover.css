@@ -794,38 +794,3 @@ html[data-theme="dark"] .preview-loading {
     align-items: stretch;
   }
 }
-
-/* Premium Locked State */
-.premium-locked {
-  position: relative;
-  opacity: 0.6;
-  cursor: pointer;
-  transition: opacity var(--transition-base);
-}
-
-.premium-locked::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.02);
-}
-
-.premium-locked:hover {
-  opacity: 0.9;
-}
-
-.premium-locked * {
-  pointer-events: none; /* Let the container handle clicks */
-}
-
-.premium-locked label svg {
-  width: 14px;
-  height: 14px;
-  color: #fbbf24;
-  margin-left: 4px;
-  vertical-align: middle;
-}

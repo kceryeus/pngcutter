@@ -62,40 +62,9 @@ const translations = {
       home: 'Início',
       features: 'Funcionalidades',
       howItWorks: 'Como Funciona',
-      pricing: 'Preços',
       getStarted: 'Começar Agora',
       openMenu: 'Abrir menu',
       closeMenu: 'Fechar menu'
-    },
-    pricing: {
-      title: 'Planos e Preços',
-      subtitle: 'Escolha o plano ideal para si',
-      free: {
-        title: 'Gratuito',
-        price: '0 MT',
-        period: 'sempre',
-        features: [
-          'Remoção ilimitada de backgrounds',
-          'Download imediato',
-          'Sem necessidade de registo',
-          'Suporte à comunidade'
-        ],
-        button: 'Começar Grátis'
-      },
-      pro: {
-        title: 'Pro',
-        price: '50 MT',
-        period: 'por 7 dias',
-        features: [
-          'Tudo do plano Gratuito',
-          'Acesso Ilimitado',
-          'Redimensionamento em Lote',
-          'Conversor de Formatos',
-          'Suporte prioritário'
-        ],
-        button: 'Subscrever Agora',
-        popular: 'Mais Popular'
-      }
     },
     footer: {
       rights: '© 2026 PNG Cutter. Todos os direitos reservados.',
@@ -104,7 +73,6 @@ const translations = {
       links: {
         about: 'Sobre',
         features: 'Funcionalidades',
-        pricing: 'Preços',
         contact: 'Contacto',
         terms: 'Termos de Uso',
         privacy: 'Política de Privacidade'
@@ -169,40 +137,9 @@ const translations = {
       home: 'Home',
       features: 'Features',
       howItWorks: 'How It Works',
-      pricing: 'Pricing',
       getStarted: 'Get Started',
       openMenu: 'Open menu',
       closeMenu: 'Close menu'
-    },
-    pricing: {
-      title: 'Plans & Pricing',
-      subtitle: 'Choose the perfect plan for you',
-      free: {
-        title: 'Free',
-        price: '0 MT',
-        period: 'forever',
-        features: [
-          'Unlimited background removal',
-          'Instant download',
-          'No registration required',
-          'Community support'
-        ],
-        button: 'Start Free'
-      },
-      pro: {
-        title: 'Pro',
-        price: '50 MT',
-        period: 'per 7 days',
-        features: [
-          'Everything in Free',
-          'Unlimited Access',
-          'Bulk Resizer',
-          'Format Converter',
-          'Priority support'
-        ],
-        button: 'Subscribe Now',
-        popular: 'Most Popular'
-      }
     },
     footer: {
       rights: '© 2026 PNG Cutter. All rights reserved.',
@@ -211,7 +148,6 @@ const translations = {
       links: {
         about: 'About',
         features: 'Features',
-        pricing: 'Pricing',
         contact: 'Contact',
         terms: 'Terms of Use',
         privacy: 'Privacy Policy'
@@ -276,7 +212,6 @@ function renderLanding() {
           <a href="#home">${t('topbar.home')}</a>
           <a href="#features" class="nav-link">${t('topbar.features')}</a>
           <a href="#how-it-works" class="nav-link">${t('topbar.howItWorks')}</a>
-          <a href="#pricing" class="nav-link">${t('topbar.pricing')}</a>
           <div class="language-selector">
             <button class="lang-btn ${lang === 'pt' ? 'active' : ''}" data-lang="pt" aria-label="Português">PT</button>
             <button class="lang-btn ${lang === 'en' ? 'active' : ''}" data-lang="en" aria-label="English">EN</button>
@@ -297,7 +232,6 @@ function renderLanding() {
         <a href="#home" class="landing-mobile-nav-link">${t('topbar.home')}</a>
         <a href="#features" class="landing-mobile-nav-link">${t('topbar.features')}</a>
         <a href="#how-it-works" class="landing-mobile-nav-link">${t('topbar.howItWorks')}</a>
-        <a href="#pricing" class="landing-mobile-nav-link">${t('topbar.pricing')}</a>
         <a href="app.html" class="landing-mobile-nav-link landing-mobile-nav-cta">${t('topbar.getStarted')}</a>
       </div>
     </nav>
@@ -386,40 +320,6 @@ function renderLanding() {
         </div>
       </div>
 
-      <div class="landing-pricing" id="pricing">
-        <div class="landing-section-header">
-          <h2>${t('pricing.title')}</h2>
-          <p>${t('pricing.subtitle')}</p>
-        </div>
-        
-        <div class="pricing-cards">
-          <div class="pricing-card">
-            <h3>${t('pricing.free.title')}</h3>
-            <div class="pricing-price">
-              <span class="price-amount">${t('pricing.free.price')}</span>
-              <span class="price-period">/${t('pricing.free.period')}</span>
-            </div>
-            <ul class="pricing-features">
-              ${translations[lang].pricing.free.features.map(feature => `<li>${feature}</li>`).join('')}
-            </ul>
-            <a href="app.html" class="pricing-button">${t('pricing.free.button')}</a>
-          </div>
-          
-          <div class="pricing-card pricing-card-pro">
-            ${translations[lang].pricing.pro.popular ? `<div class="pricing-badge">${t('pricing.pro.popular')}</div>` : ''}
-            <h3>${t('pricing.pro.title')}</h3>
-            <div class="pricing-price">
-              <span class="price-amount">${t('pricing.pro.price')}</span>
-              <span class="price-period">/${t('pricing.pro.period')}</span>
-            </div>
-            <ul class="pricing-features">
-              ${translations[lang].pricing.pro.features.map(feature => `<li>${feature}</li>`).join('')}
-            </ul>
-            <a href="app.html" class="pricing-button pricing-button-pro">${t('pricing.pro.button')}</a>
-          </div>
-        </div>
-      </div>
-
       <div class="landing-cta">
         <div class="landing-cta-content">
           <h2>${t('cta.title')}</h2>
@@ -444,7 +344,7 @@ function renderLanding() {
           <ul class="footer-links">
             <li><a href="#home">${t('footer.links.about')}</a></li>
             <li><a href="#features">${t('footer.links.features')}</a></li>
-            <li><a href="#pricing">${t('footer.links.pricing')}</a></li>
+            <li><a href="#how-it-works">${t('topbar.howItWorks')}</a></li>
           </ul>
         </div>
 
@@ -490,9 +390,6 @@ function renderLanding() {
 
   // Configurar autenticação Clerk
   setupClerkAuth();
-
-  // Configurar fluxo de pagamento PaySuite
-  setupPaymentFlow();
 }
 
 async function setupClerkAuth() {
@@ -513,8 +410,8 @@ async function setupClerkAuth() {
     }
   }
 
-  // Interceptar todos os links para app.html, exceto o botão Pro que inicia o pagamento
-  const appLinks = document.querySelectorAll('a[href="app.html"]:not(.pricing-button-pro)');
+  // Configurar autenticação e navegação para app.html
+  const appLinks = document.querySelectorAll('a[href="app.html"]');
   appLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -712,61 +609,4 @@ document.addEventListener('DOMContentLoaded', () => {
     glow.style.opacity = '0';
   });
 });
-
-function setupPaymentFlow() {
-  const proBtn = document.querySelector('.pricing-button-pro');
-  if (proBtn) {
-    proBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      
-      const originalText = proBtn.textContent;
-      proBtn.textContent = 'A processar...';
-      proBtn.style.pointerEvents = 'none';
-
-      try {
-        const response = await fetch('/api/create-payment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            amount: 50.00,
-            reference: `PRO${Date.now()}`,
-            description: 'PNG Cutter - Acesso Premium Pro (7 dias)',
-            return_url: `${window.location.origin}/app.html`
-          })
-        });
-
-        const text = await response.text();
-        let result;
-        try {
-          result = JSON.parse(text);
-        } catch (e) {
-          console.error('Resposta da API não é JSON:', text);
-          alert('Erro ao ligar à API de pagamentos. Verifique se as variáveis de ambiente PAYSUITE_API_KEY foram adicionadas no painel da Vercel.');
-          proBtn.textContent = originalText;
-          proBtn.style.pointerEvents = 'auto';
-          return;
-        }
-
-        if (result.status === 'success' && result.data && result.data.checkout_url) {
-          // Guardar ID no localStorage como fallback de verificação
-          localStorage.setItem('pending_payment_id', result.data.id);
-          window.location.href = result.data.checkout_url;
-        } else {
-          const errorMsg = result.message || 'Erro interno do servidor PaySuite ou chave de API inválida no ficheiro .env.';
-          alert(`Erro ao iniciar processo de pagamento: ${errorMsg}`);
-          console.error('Erro detalhado do PaySuite:', result);
-          proBtn.textContent = originalText;
-          proBtn.style.pointerEvents = 'auto';
-        }
-      } catch (err) {
-        console.error('Erro no checkout:', err);
-        alert('Erro de rede ao iniciar o pagamento.');
-        proBtn.textContent = originalText;
-        proBtn.style.pointerEvents = 'auto';
-      }
-    });
-  }
-}
 
